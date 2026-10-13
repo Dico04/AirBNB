@@ -1,0 +1,41 @@
+:root {
+  --panel-bg: rgba(20, 18, 16, 0.42);
+  --panel-fg: #f6f1ea;
+  --accent: #e9c48f;
+}
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--panel-fg);
+}
+#app, #app canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.hidden { display: none !important; }
+.overlay {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  background: rgba(15, 13, 11, 0.35); cursor: pointer; z-index: 10;
+  backdrop-filter: blur(2px);
+}
+.overlay .card {
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 22px 26px; border-radius: 14px;
+  background: rgba(24, 21, 18, 0.72); box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+.overlay h1 { font-size: 20px; margin: 0 0 10px; font-weight: 600; letter-spacing: 0.2px; }
+.overlay p { margin: 6px 0; line-height: 1.45; font-size: 15px; }
+.overlay .sub { color: var(--accent); font-size: 13px; }
+.panel {
+  position: fixed; z-index: 5; background: var(--panel-bg); color: var(--panel-fg);
+  border-radius: 10px; padding: 9px 12px; font-size: 12.5px; line-height: 1.6;
+  backdrop-filter: blur(4px); pointer-events: none; user-select: none;
+}
+#help { left: 16px; bottom: 16px; }
+#fps { right: 16px; top: 16px; font-variant-numeric: tabular-nums; }
+#crosshair {
+  position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px;
+  border-radius: 50%; background: rgba(255,255,255,0.75); box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+  z-index: 4; pointer-events: none;
+}
+body.shot .panel, body.shot .overlay, body.shot #crosshair { display: none !important; }

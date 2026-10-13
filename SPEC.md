@@ -146,9 +146,9 @@ These are cropped from your screenshots, with the phone UI removed. The listing 
 | Corridor | 3.30–4.70 | 0.00–4.20 | 1.4 m to the bar base; **1.1 m clear** past the bar overhang | oak planks running N–S | Desk across the north end, under the window. |
 | Bathroom | 4.80–7.10 | 0.00–1.80 | 2.3 × 1.8 ≈ 4.1 m² | light-grey tiles (assumed) | **Right** corridor door. Bath along the south wall, window above the bath's east end, WC with a ledge on the north wall, vanity in the SW corner. |
 | Kitchen (U-shape) | 4.70–7.10 | 1.90–4.20 | 2.4 × 2.3 ≈ 5.5 m² | light-grey 60 × 60 tiles | Open to the corridor above the bar, and open to the living room between the pillar and the fridge column. |
-| Living room | 0.90–7.10 | 4.20–8.80 | 6.2 × 4.6 ≈ 28.5 m² | oak planks running N–S | Front door in the north wall. Sliding door and window in the south wall. Chimney breast in the SE corner. |
+| Living room | 0.90–7.10 | 4.20–9.05 | 6.2 × 4.85 ≈ 30 m² | oak planks running N–S | Front door in the north wall. Sliding door and window in the south wall. Chimney breast in the SE corner. |
 | Stair landing | 0.90–3.20 | 3.10–4.00 | n/a | n/a | Outside the flat. Shown only as a dim volume behind the front door. |
-| Roof terrace | 0.60–7.25 | 9.10–14.05 | 6.6 × 5.0 ≈ 33 m² | grey weathered decking, boards E–W | South and east parapets are white boards. The west side is a tall white rendered wall (~6 m). |
+| Roof terrace | 0.60–7.25 | 9.35–14.30 | 6.6 × 5.0 ≈ 33 m² | grey weathered decking, boards E–W | South and east parapets are white boards. The west side is a tall white rendered wall (~6 m). |
 
 ### Openings
 
@@ -464,3 +464,17 @@ Sources consulted for the landmark:
 - [allemaalcultuur.be – Elckerlyc opened in the former OLV van Gratiekerk](https://allemaalcultuur.be/elckerlyc-theater-events-officieel-geopend-in-voormalige-onze-lieve-vrouw-van-gratiekerk/)
 - [VRT NWS – Theater Elckerlyc buys the adjacent church](https://www.vrt.be/vrtnws/nl/2022/10/11/theater-elckerlyc-koopt-aanpalende-onze-lieve-vrouw-van-gratieke/)
 - [Onroerend Erfgoed – protection decision, Frankrijklei 89](https://besluiten.onroerenderfgoed.be/besluiten/3488/bestanden/9135)
+
+---
+
+## 6. Build log: changes made while building
+
+`src/apartment.config.js` is now the source of truth for every number. The ASCII plan above shows the original estimate.
+
+### Step 2: shell, movement and collision
+- **Living room is 0.25 m deeper** (4.60 → 4.85 m; south wall face at y = 9.05). Everything south of it moved +0.25 m with it: façade, oak platform, chimney breast and terrace.
+  - Why: fitting camera poses to measured photo points showed photo 05 was shot from the far south end of the room, near the oak platform, with a narrower lens (~36° vertical FOV). Photo 03 was shot from behind the sofa, west of the window.
+- **Sofa placement for Step 4:** the same fits put the sofa's back at about y ≈ 6.6, seats to ≈ 7.6, so further south than first estimated. The coffee table goes near (4.5, 7.9), just in front of the platform.
+- **Terrace storage cabinet for Step 5:** photo 03's window view plus photo 07 put it right outside the living-room window. It stands perpendicular to the façade with its doors facing west (toward the sliding door), not in the far NE corner.
+- **Compare cameras:** the poses for 03, 05 and 06 are fitted to photo measurements (rms 10–23 px). The rest are hand-placed and get refined as furniture arrives.
+

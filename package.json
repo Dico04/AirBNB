@@ -1,0 +1,20 @@
+{
+  "name": "antwerp-rooftop-walkthrough",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Walkable 3D simulation of a rooftop apartment on the Frankrijklei, Antwerp.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "compare": "node tools/compare.mjs"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1",
+    "vite": "8.3.4"
+  }
+}

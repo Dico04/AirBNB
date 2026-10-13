@@ -5,6 +5,7 @@ import { buildLiving } from './living.js';
 import { buildCorridor } from './corridor.js';
 import { buildBedroom } from './bedroom.js';
 import { buildBathroom } from './bathroom.js';
+import { buildTerrace } from './terrace.js';
 import { mergeStatic } from '../util/merge.js';
 
 export function buildFurniture(collision, lamps) {
@@ -12,7 +13,7 @@ export function buildFurniture(collision, lamps) {
   root.name = 'furniture';
   const rooms = [
     buildKitchen(collision, lamps), buildLiving(collision, lamps), buildCorridor(collision, lamps),
-    buildBedroom(collision, lamps), buildBathroom(collision, lamps),
+    buildBedroom(collision, lamps), buildBathroom(collision, lamps), buildTerrace(collision, lamps),
   ];
   for (const r of rooms) {
     root.add(r);

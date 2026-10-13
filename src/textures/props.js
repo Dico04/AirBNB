@@ -382,3 +382,24 @@ export function strawDisc(base = '#c9a574') {
 }
 
 export function clamp(v) { return clamp01(v); }
+
+// ---------------------------------------------------------------- Acapulco chair cords (alphaTest)
+// Two crossing sets of round PVC cords along V (bottom ring → top rim); transparent gaps between.
+export function cordWeave(color = '#f3f2ee', strands = 64) {
+  return once(`cords-${color}-${strands}`, () => {
+    const pw = 1024, ph = 256, c = mk(pw, ph), g = c.getContext('2d');
+    g.clearRect(0, 0, pw, ph);
+    const step = pw / strands;
+    const cord = (x0, x1) => {
+      for (const ox of [-pw, 0, pw]) {
+        g.strokeStyle = color; g.lineWidth = step * 0.26; g.lineCap = 'butt';
+        g.beginPath(); g.moveTo(x0 + ox, ph); g.lineTo(x1 + ox, 0); g.stroke();
+      }
+    };
+    // each cord runs from the bottom ring to the rim, offset by ±1/6 turn → crisscross pattern
+    const twist = pw / 6;
+    for (let i = 0; i < strands; i++) { cord(i * step, i * step + twist); cord(i * step, i * step - twist); }
+    const map = canvasTex(c);
+    return { map };
+  });
+}

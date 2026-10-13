@@ -1,4 +1,5 @@
-// Procedural plants: olive tree (instanced leaves), columnar euphorbia, bird-of-paradise, dried flowers.
+// Procedural plants: olive tree (instanced leaves), columnar euphorbia, bird-of-paradise, dried flowers,
+// dwarf fan palm and agave (terrace).
 // Plants keep vertex colours / instancing, so they are flagged noMerge.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -258,5 +259,87 @@ export function driedFlowers({ seed = 31, stems = 7, height = 0.32 } = {}) {
   if (beige.length) group.add(new THREE.Mesh(mergeGeometries(beige), mats.paint('#cdbb84', 0.95)));
   if (red.length) group.add(new THREE.Mesh(mergeGeometries(red), mats.paint('#a8503a', 0.95)));
   for (const c of group.children) { c.castShadow = true; }
+  return group;
+}
+
+// ---------------------------------------------------------------- dwarf fan palm (Chamaerops)
+// Short fibrous trunk, long petioles, each ending in a fan of stiff folded leaflets (instanced).
+export function fanPalm({ height = 1.0, seed = 41, fronds = 11 } = {}) {
+  const rand = mulberry32(seed);
+  const group = new THREE.Group();
+  group.userData.noMerge = true;
+  const trunkH = height * 0.22;
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, trunkH, 10, 3), mats.paint('#5e4b3a', 1));
+  trunk.position.y = trunkH / 2;
+  trunk.castShadow = true;
+  group.add(trunk);
+  const stems = [];
+  const leaflet = leafGeometry(0.30, 0.022, { fold: 0.6, curl: -0.05, tipShape: 0.5, segs: 5 });
+  const perFan = 18;
+  const inst = new THREE.InstancedMesh(leaflet, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.55, side: THREE.DoubleSide }), fronds * perFan);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), col = new THREE.Color();
+  const cA = new THREE.Color('#3f5e34'), cB = new THREE.Color('#5d7a45');
+  let n = 0;
+  for (let f = 0; f < fronds; f++) {
+    const a = (f / fronds) * Math.PI * 2 + rand() * 0.4;
+    const tilt = 0.25 + rand() * 0.75;                      // 0 = upright, 1 = spreading
+    const L = height * (0.38 + rand() * 0.22);
+    const base = V(0, trunkH * 0.9, 0);
+    const tip = base.clone().add(V(Math.cos(a) * L * tilt * 0.8, L * (1 - tilt * 0.45), Math.sin(a) * L * tilt * 0.8));
+    const mid = base.clone().lerp(tip, 0.5).add(V(0, 0.04, 0));
+    const curve = new THREE.CatmullRomCurve3([base, mid, tip]);
+    stems.push(new THREE.TubeGeometry(curve, 8, 0.006, 5, false).toNonIndexed());
+    // fan: leaflets radiate in the plane facing outward/upward from the petiole tip
+    const dir = curve.getTangent(1);
+    const out = V(Math.cos(a), 0, Math.sin(a));
+    const fanUp = dir.clone().add(V(0, 0.6, 0)).normalize();
+    const fanSide = new THREE.Vector3().crossVectors(fanUp, out).normalize();
+    for (let i = 0; i < perFan; i++) {
+      const t = (i / (perFan - 1)) * 2 - 1;                // −1 … 1 across the fan
+      const ang = t * 1.25;
+      const d = fanUp.clone().multiplyScalar(Math.cos(ang)).addScaledVector(fanSide, Math.sin(ang)).addScaledVector(out, 0.25).normalize();
+      q.setFromUnitVectors(V(0, 1, 0), d);
+      q.premultiply(new THREE.Quaternion().setFromAxisAngle(d, (rand() - 0.5) * 0.6));
+      const s = 0.8 + (1 - Math.abs(t)) * 0.45 + rand() * 0.15;
+      sc.set(1, s, 1);
+      m.compose(tip, q, sc);
+      inst.setMatrixAt(n, m);
+      inst.setColorAt(n, col.copy(cA).lerp(cB, rand()));
+      n++;
+    }
+  }
+  inst.instanceMatrix.needsUpdate = true;
+  inst.castShadow = true; inst.receiveShadow = true;
+  const stemMesh = new THREE.Mesh(mergeGeometries(stems), mats.paint('#4a5e36', 0.6));
+  stemMesh.castShadow = true;
+  group.add(stemMesh, inst);
+  return group;
+}
+
+// ---------------------------------------------------------------- agave / small yucca rosette
+export function agave({ height = 0.42, seed = 51, leaves = 22, color = '#5b7552' } = {}) {
+  const rand = mulberry32(seed);
+  const group = new THREE.Group();
+  group.userData.noMerge = true;
+  const geo = leafGeometry(1, 0.11, { fold: 0.7, curl: 0.12, tipShape: 0.45, segs: 6 });
+  const inst = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.5, side: THREE.DoubleSide }), leaves);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), col = new THREE.Color();
+  const c0 = new THREE.Color(color), c1 = new THREE.Color('#8c9c6c');
+  for (let i = 0; i < leaves; i++) {
+    const a = i * 2.39996 + rand() * 0.2;                    // golden-angle rosette
+    const r = i / leaves;
+    const tilt = 0.15 + (1 - r) * 0.95;                       // outer leaves spread wider
+    const d = V(Math.cos(a) * Math.sin(tilt), Math.cos(tilt), Math.sin(a) * Math.sin(tilt)).normalize();
+    q.setFromUnitVectors(V(0, 1, 0), d);
+    q.premultiply(new THREE.Quaternion().setFromAxisAngle(d, a + Math.PI / 2));
+    const L = height * (0.55 + (1 - r) * 0.45) * (0.85 + rand() * 0.3);
+    sc.set(L * 0.9, L, L);
+    m.compose(V(0, 0.01, 0), q, sc);
+    inst.setMatrixAt(i, m);
+    inst.setColorAt(i, col.copy(c0).lerp(c1, rand() * 0.5));
+  }
+  inst.instanceMatrix.needsUpdate = true;
+  inst.castShadow = true; inst.receiveShadow = true;
+  group.add(inst);
   return group;
 }

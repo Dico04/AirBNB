@@ -523,3 +523,36 @@ Sources consulted for the landmark:
 - **Known gaps for later steps:**
   - TV screen content and lamp switching (Step 6)
   - terrace furniture, view out of the windows, skyline (Step 5)
+
+### Step 5: terrace, skyline and church
+- **Terrace furniture** comes from `FURNITURE.terrace`. Every piece has a collider, and terrace props use the exterior (sky) lighting.
+  - **Storage cabinet:** x 4.60–5.20, y 9.42–10.62, doors facing west. It is visible through the living-room window in photo 03, as in the photo.
+  - **L-lounge:** outer back corner at (6.20, 13.35), with three modules plus the corner along the east side and two along the south. It stands about 1 m in from the parapets; photo 07 shows it that close, and it leaves room behind the corner for the olive tree and fan palm.
+  - **Dining group:** the table is at x 1.95–2.85, y 11.70–13.30, a little north of the first estimate.
+  - **Furniture moved between photo shoots:** photos 02 and 07 can't be satisfied by a single layout of the dining chairs and Acapulco chair. The layout follows 07 and keeps a clear path from the sliding door to the south parapet.
+  - **Batten screen:** on the tall west wall (y 11.6–12.8), not on the façade, which matches photo 02.
+  - **Festoon:** cable anchors run along the east and south parapets, up past the ladder, then along the west wall at about 2.1 m. Five pooled point lights are set about 0.7 m in from the parapets, so the boards don't get hot spots at night.
+- **The city** is in `CITY` in the config. Plan +x is true south and plan +y is true west.
+  - **Frankrijklei:** a 55 m boulevard along plan x, with sidewalks, parking, lanes, a planted tram bed and four rows of plane trees. Continuous street walls of 21–31 m line both sides.
+  - **Church** (former OLV van Gratiekerk, now Theater Elckerlyc):
+    - façade centred at (−21, 76), turned 10° so photo 02's oblique view works
+    - two 62 m towers: buttressed brick shafts with white stone bands, oculus, pierced balustrade, louvred belfry, slate skirt, gableted upper stage, four slate pinnacles and an octagonal spire
+    - centre bay: portal, blind arcade, tracery window and 7-arch gallery
+    - nave, aisles, transepts with rose windows, and an apse
+    - The sunset preset puts the sun right behind it.
+  - **Landmarks and neighbours:**
+    - the white finned office left of the church, with a taller block behind it (photos 02 and 07)
+    - a cream neoclassical block to its right
+    - the red-brick block behind the olive tree (07)
+    - the office block seen through the desk window (05 and 09)
+    - a crane and a residential tower to the true north (01)
+    - a distant domed building
+    - the tall neighbour behind the terrace's west wall
+  - **Generic skyline:** a jittered grid out to 900 m. Heights mostly 14–30 m, with a few towers, and nothing tall behind the church.
+  - **Night:** façade windows have their own lit-window maps that fade in after dusk; the church gets warm floodlighting.
+- **Bedroom window view (photo 01):** outside is a narrow neighbour roof with a brick parapet and concrete coping. A galvanised roof-access ladder is fixed to the façade in front of the window.
+- **Compare cameras:**
+  - new 02L (church close-up) and 01R (bedroom-window view)
+  - 07 placed low and wide to match photo 07's view
+  - Cameras can now ask for outdoor exposure (`outdoor: true`) when the photo was exposed for the view outside.
+- **Performance:** the city adds about 25 draw calls; façades, roofs and copings are each merged per material. A terrace view runs about 300 draw calls and roughly 0.55–0.6 M triangles; Step 7 handles further optimisation.

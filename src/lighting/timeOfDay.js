@@ -172,7 +172,7 @@ export class TimeOfDay {
       if (a.t >= 1) this.anim = null;
     }
     // Eye adaptation: outdoors in daylight the exposure drops (like a photographer re-exposing).
-    const outside = roomAtPlan(cameraPos.x, cameraPos.z) === 'terrace' || cameraPos.y > 3.2;
+    const outside = this.forceOutdoor || roomAtPlan(cameraPos.x, cameraPos.z) === 'terrace' || cameraPos.y > 3.2;
     const target = outside ? THREE.MathUtils.lerp(LIGHTING.outdoorExposure, 1, this.state.night) : 1;
     if (this._adaptInit === undefined) { this.adapt = target; this._adaptInit = true; }
     this.adapt += (target - this.adapt) * Math.min(1, dt / LIGHTING.adaptSeconds);

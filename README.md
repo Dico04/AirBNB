@@ -47,7 +47,17 @@ All of it is tunable in `DAYLIGHT_KEYS`, `LIGHTING`, `LAMPS` and `QUALITY` in th
 - instanced olive and strelitzia leaves
 - procedural textures for wood grain, velvet, linen, cane webbing, macramé, cork, stoneware and brushed steel
 
-The terrace furniture and the city skyline come in Step 5.
+**Terrace, skyline and church (Step 5):**
+- **Roof terrace:** the weathered storage cabinet outside the living-room window, a teak L-lounge with canvas cushions, a round side table, the slatted dining table with a candle bowl, Acapulco and red folding chairs, a black ladder, a hardwood batten screen, a potted olive tree, fan palm and agave, a pebble strip, and festoon string lights that switch on at dusk.
+- **The city around it:**
+  - the Frankrijklei boulevard with tram bed and plane trees
+  - the neo-Gothic former Onze-Lieve-Vrouw van Gratiekerk (now Theater Elckerlyc), placed so the sun sets right behind its spires
+  - the neighbours seen in the photos
+  - a procedural skyline about 900 m out
+  - lit windows and a floodlit church at night
+- **Through the windows:** the galvanised roof ladder and brick parapet outside the bedroom; the office block behind the desk.
+
+See `compare/terrace-times.jpg` for the terrace at all four presets.
 
 ## Tweaking the apartment
 
@@ -74,11 +84,13 @@ These tools use Playwright 1.56.1. On a new machine, run `npx playwright install
 ```
 src/apartment.config.js   all dimensions, colours, positions, compare camera poses
 src/main.js               renderer, scene assembly, loop, compare/debug camera modes
-src/world/                shell (walls, floors, roof), openings (windows, doors), terrace, materials
+src/world/                shell (walls, floors, roof), openings (windows, doors), terrace, materials,
+                          city (boulevard, skyline, neighbours) and the church
 src/textures/             procedural PBR texture generators (oak, tiles, plaster, decking, wood grain, fabrics, cane, …)
+                          and canvas city textures (façades with night windows, church brick, slate, road)
 src/util/                 geometry helpers (world-space UVs, rounded boxes) and static mesh merging
 src/lighting/             sun position, sky dome, environment maps, window lights, lamps, time-of-day controller
-src/props/                furniture & props per room (kitchen, living, corridor, bedroom, bathroom), plants, shared kit
+src/props/                furniture & props per room (kitchen, living, corridor, bedroom, bathroom, terrace), plants, shared kit
 src/render/post.js        post-processing chain (N8AO, bloom, ACES, vignette, SMAA)
 src/player/               first-person controller and height-aware collision
 tools/                    compare, ad-hoc shot and walk-test scripts (Playwright)

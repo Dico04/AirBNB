@@ -230,6 +230,67 @@ export const FURNITURE = {
     bucket: { pos: [5.36, 1.56] },
     wc: { x: [6.10, 6.70], ledgeH: 1.10, ledgeDepth: 0.20 },
   },
+  // Roof terrace (heights above the deck). Layout from photos 02, 03 (window view) and 07.
+  terrace: {
+    weathered: { base: '#aea597', dark: '#7f776c', light: '#cbc3b6' },     // silver-grey teak/pine
+    cabinet: { x: [4.60, 5.20], y: [9.42, 10.62], h: 2.05, color: '#b9aea2' },   // doors face west
+    lounge: {
+      corner: [6.20, 13.35],          // outer back corner (backs face east & south)
+      module: 0.75, longArm: 3, shortArm: 2, seatH: 0.40, backH: 0.75,
+      teak: '#9a6a43', cushion: '#ede7dc',
+    },
+    sideTable: { pos: [4.85, 11.75], d: 0.55, h: 0.45, top: '#9a6a43' },
+    table: { x: [1.95, 2.85], y: [11.70, 13.30], h: 0.75, frame: '#3a3d40' },
+    acapulco: { pos: [4.15, 12.25], face: 215, color: '#f0f0ee' },
+    folding: { color: '#8e4636', chairs: [{ pos: [2.40, 11.40], face: 175 }, { pos: [2.35, 13.72], face: 5 }] },
+    candleBowl: { pos: [2.45, 12.55], wood: '#b08a5e', wax: '#d9a46a' },
+    jarCandle: { pos: [2.27, 12.40], glass: '#c98a4a' },
+    ladder: { y: 13.75, w: 0.40, len: 1.80, leanDeg: 10, rungs: 5 },
+    battens: { y: [11.60, 12.80], h: 2.20, color: '#8c6a4f' },          // on the tall west wall
+    olive: { pos: [6.80, 13.92], height: 2.1, pot: '#2b2d2f' },
+    palm: { pos: [5.85, 13.98], height: 1.1, pot: '#2b2d2f' },
+    agave: { pos: [1.12, 14.05], pot: '#c9c4bb' },
+    pebbles: { x: [0.62, 7.22], y: [14.12, 14.30], color: '#e9e6df' },
+    // Festoon: anchor points [x, y, h above the deck]; cable sags between anchors, bulbs every `spacing`.
+    festoon: {
+      spacing: 0.5, sagPerM: 0.05,
+      anchors: [[7.20, 9.90, 1.02], [7.20, 11.95, 1.02], [7.20, 14.25, 1.02], [5.15, 14.25, 1.02], [3.05, 14.25, 1.02],
+                [0.70, 14.25, 1.05], [0.68, 13.75, 2.05], [0.68, 11.80, 2.10], [0.68, 9.80, 2.10]],
+    },
+  },
+};
+
+// ---------------------------------------------------------------- city around the flat (step 5)
+// Plan metres (x = plan east = true SOUTH, y = plan south = true WEST). Heights `top` are metres above
+// the STREET (the flat's floor is SITE.floorAboveStreet above it).
+export const CITY = {
+  seed: 7,
+  radius: 900,                      // procedural skyline extent
+  cell: 34,                         // jittered grid cell for generic blocks
+  street: { y: [14.55, 70.0] },     // Frankrijklei: sidewalks, parking, lanes, planted tram reservation
+  trees: { x: [-350, 350], spacing: 10, rows: [21.5, 37.8, 46.8, 63.0] },
+  frontage: { depth: 12, width: [10, 26], top: [21, 31], tall: 0.12 },   // continuous street walls along the boulevard
+  church: { facade: [-21.0, 76.0], turnDeg: 10 },   // façade centre; faces the boulevard, turned 10° (02: oblique view)
+  blocks: [
+    // close neighbours
+    { id: 'west-tall',   rect: [-16, 9.35, 0.30, 14.55], top: 32.25, style: 'render-grey' },   // behind the tall terrace wall
+    { id: 'west-back',   rect: [-16, -12, -1.75, 9.35], top: 16, style: 'brick' },
+    { id: 'west-walk',   rect: [-1.75, -0.3, -0.30, 9.35], top: 25.65, style: 'brick' },     // roof strip outside the bedroom window
+    { id: 'east',        rect: [7.45, -12, 24, 14.55],  top: 22.7, style: 'render-white' },
+    { id: 'back',        rect: [-0.30, -12, 7.45, -0.30], top: 20, style: 'render-white' },
+    { id: 'courtyard',   rect: [-16, -30, 24, -12],     top: 12, style: 'brick-dark' },
+    // landmarks from the photos
+    { id: 'desk-view',   rect: [-8, -50, 30, -34],      top: 33, style: 'office-grid' },     // 05: through the desk window
+    { id: 'fins-office', rect: [-8, 72, 46, 88],        top: 22, style: 'office-fins', poster: true },   // 02 & 07
+    { id: 'fins-upper',  rect: [2, 90, 50, 108],        top: 31, style: 'office-grid' },    // 07: taller block behind it
+    { id: 'cream',       rect: [-52, 72, -34, 90],      top: 19, style: 'render-cream' },   // 02: right of the church
+    { id: 'red-brick',   rect: [55, 74, 80, 94],        top: 30, style: 'brick' },          // 07: behind the olive tree
+    { id: 'resi-tower',  rect: [-310, -70, -284, -44],  top: 50, style: 'render-white' },   // 01: ~15 storeys
+  ],
+  dome: { center: [440, 100], base: [44, 44], top: 30, r: 10 },          // 07: distant dark dome + lantern
+  crane: { pos: [-170, -25], mast: 72, jib: 48, deg: 35, color: '#d9a35a' },  // 01: tower crane to the true north
+  bedroomParapet: { x: [-1.75, -1.45], y: [-0.3, 9.35], top: 0.75 },     // brick parapet + coping (h above our floor)
+  roofLadder: { x: -0.44, y: [1.93, 2.42], h: [-0.35, 3.55] },          // galvanised ladder outside the bedroom window
 };
 
 // ---------------------------------------------------------------- lighting & time of day
@@ -284,11 +345,11 @@ export const LAMPS = [
   { id: 'kitchen-down-2', room: 'kitchen', type: 'spot',  pos: [6.15, 3.55, 2.34], kelvin: 3000, intensity: 45, auto: true, fixture: 'downlight' },
   { id: 'bath-ceil',     room: 'bathroom', type: 'point', pos: [5.95, 0.90, 2.52], kelvin: 3500, intensity: 30, auto: true, fixture: 'flush' },
   // Festoon string lights on the terrace: each source stands in for ~8 warm bulbs.
-  { id: 'festoon-s1', room: 'terrace', type: 'point', pos: [1.70, 14.12, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
-  { id: 'festoon-s2', room: 'terrace', type: 'point', pos: [3.90, 14.12, 1.18], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
-  { id: 'festoon-s3', room: 'terrace', type: 'point', pos: [6.10, 14.12, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
-  { id: 'festoon-e1', room: 'terrace', type: 'point', pos: [7.08, 10.60, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
-  { id: 'festoon-e2', room: 'terrace', type: 'point', pos: [7.08, 12.70, 1.18], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+  { id: 'festoon-s1', room: 'terrace', type: 'point', pos: [1.70, 13.45, 1.25], kelvin: 2600, intensity: 1.6, auto: true, group: 'festoon' },
+  { id: 'festoon-s2', room: 'terrace', type: 'point', pos: [3.90, 13.45, 1.25], kelvin: 2600, intensity: 1.6, auto: true, group: 'festoon' },
+  { id: 'festoon-s3', room: 'terrace', type: 'point', pos: [5.40, 13.45, 1.25], kelvin: 2600, intensity: 1.6, auto: true, group: 'festoon' },
+  { id: 'festoon-e1', room: 'terrace', type: 'point', pos: [6.40, 10.40, 1.25], kelvin: 2600, intensity: 1.6, auto: true, group: 'festoon' },
+  { id: 'festoon-e2', room: 'terrace', type: 'point', pos: [2.10, 11.40, 1.95], kelvin: 2600, intensity: 1.1, auto: true, group: 'festoon' },
 ];
 
 // Render quality presets (?q=low|medium|high; menu in step 6).
@@ -318,12 +379,14 @@ export const PLAYER = {
 // to measured photo points; the others are hand-placed and get refined as furniture arrives.
 export const COMPARE_CAMERAS = [
   { id: '01L', ref: '01.jpg', crop: [0, 0, 0.515, 1], eye: [2.45, 0.35, 1.45], target: [0.75, 2.90, 0.95], fov: 60 },
-  { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [5.40, 12.30, 1.55], target: [0.60, 12.90, 1.05], fov: 58, time: 13.5 },
+  { id: '01R', ref: '01.jpg', crop: [0.515, 0, 1, 1], eye: [0.62, 2.22, 1.32], target: [-3.0, 2.12, 0.85], fov: 58, outdoor: true },
+  { id: '02L', ref: '02.jpg', crop: [0, 0, 0.467, 1], eye: [2.60, 14.00, 1.85], target: [-19.0, 78.0, 2.0], fov: 40, time: 13.5 },
+  { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [3.90, 11.10, 1.75], target: [0.60, 14.10, 1.10], fov: 58, time: 13.5 },
   { id: '03',  ref: '03.jpg', crop: [0, 0, 1, 1], eye: [4.02, 5.05, 1.45], yaw: 161.6, pitch: -11, fov: 50, solved: true, overrides: { oliveSpot: 'eastWall' } },
   { id: '04',  ref: '04.jpg', crop: [0, 0, 1, 1], eye: [3.70, 2.85, 1.70], target: [7.10, 2.80, 1.00], fov: 50 },
   { id: '05',  ref: '05.jpg', crop: [0, 0, 1, 1], eye: [3.77, 8.55, 1.29], yaw: -1.6, pitch: -4.9, fov: 36, solved: true },
   { id: '06',  ref: '06.jpg', crop: [0, 0, 1, 1], eye: [5.41, 7.39, 1.58], yaw: 345.8, pitch: -3.2, fov: 40.7, solved: true },
-  { id: '07',  ref: '07.jpg', crop: [0, 0, 1, 1], eye: [2.40, 11.00, 1.55], target: [7.25, 12.40, 0.95], fov: 55, time: 13.5 },
+  { id: '07',  ref: '07.jpg', crop: [0, 0, 1, 1], eye: [1.60, 10.90, 1.42], yaw: 122, pitch: -4, fov: 58, time: 13.5 },
   { id: '08L', ref: '08.jpg', crop: [0, 0, 0.5, 1], eye: [5.15, 0.45, 1.45], target: [6.90, 1.60, 0.80], fov: 58 },
   { id: '08R', ref: '08.jpg', crop: [0.5, 0, 1, 1], eye: [6.40, 1.05, 1.30], target: [6.40, 0.05, 1.15], fov: 42 },
   { id: '09L', ref: '09.jpg', crop: [0, 0, 0.5, 1], eye: [3.75, 2.30, 1.35], target: [3.56, 0.00, 1.10], fov: 44 },

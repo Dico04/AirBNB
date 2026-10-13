@@ -9,6 +9,7 @@ import { buildOpenings } from './world/openings.js';
 import { TimeOfDay } from './lighting/timeOfDay.js';
 import { createPost } from './render/post.js';
 import { buildFurniture } from './props/index.js';
+import { buildCity } from './world/city.js';
 import { mergeStatic } from './util/merge.js';
 
 const params = new URLSearchParams(location.search);
@@ -81,6 +82,10 @@ async function init() {
   if (staged?.oliveSpot) FURNITURE.living.oliveTree.spot = staged.oliveSpot;
   if (params.has('olive')) FURNITURE.living.oliveTree.spot = params.get('olive');
   scene.add(buildFurniture(collision, tod.lamps));
+  const city = buildCity();
+  scene.add(city.group);
+  tod.onChange((t) => city.setNight(t.state.night));
+  city.setNight(tod.state.night);
   const shotCam = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId) : null;
   if (params.has('t')) tod.setTime(Number(params.get('t')));
   else if (shotCam?.time !== undefined) tod.setTime(shotCam.time);
@@ -90,7 +95,7 @@ async function init() {
   post = createPost(renderer, scene, camera, quality, { width: w, height: h });
   resize();
 
-  window.__scene = { scene, camera, renderer, collision, tod, post, doors: openings.doors, quality: qualityName };
+  window.__scene = { scene, camera, renderer, collision, tod, post, city, doors: openings.doors, quality: qualityName };
 
   if (isShot) {
     const num = (k) => params.get(k).split(',').map(Number);
@@ -105,6 +110,7 @@ async function init() {
     camera.updateProjectionMatrix();
     collision.updateDynamic();
     // Let lamp fades and environment maps settle, then render.
+    if (c.outdoor) tod.forceOutdoor = true;      // photo exposed for the view outside
     for (let i = 0; i < 4; i++) tod.update(0.5, camera.position);
     tod.update(0.2, camera.position);
     for (let i = 0; i < 4; i++) { renderer.info.reset(); post.render(1 / 60); await nextFrame(); }

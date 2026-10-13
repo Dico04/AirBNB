@@ -478,3 +478,17 @@ Sources consulted for the landmark:
 - **Terrace storage cabinet for Step 5:** photo 03's window view plus photo 07 put it right outside the living-room window. It stands perpendicular to the façade with its doors facing west (toward the sliding door), not in the far NE corner.
 - **Compare cameras:** the poses for 03, 05 and 06 are fitted to photo measurements (rms 10–23 px). The rest are hand-placed and get refined as furniture arrives.
 
+### Step 3: lighting and time of day
+- **Presets:**
+  - 1 Morning 08:30
+  - 2 Afternoon 17:00
+  - 3 Sunset **20:30** (moved from 20:48 so the low sun is still 2.7° up, almost exactly behind the church)
+  - 4 Night 22:45
+- **One controller for everything:** a single time value drives sun, sky, exposure and lamps. All daylight parameters are keyed by sun altitude (`DAYLIGHT_KEYS`), so any date or time looks consistent.
+- **Two environment maps:**
+  - **Exterior:** the live sky (desaturated slightly so shadows go grey, not blue).
+  - **Interior:** a warm room proxy, because raw sky light turned the white walls blue.
+- **Eye adaptation:** in daylight, exposure eases down to ×0.62 on the terrace. The terrace photo (07) was clearly exposed for outdoors.
+- **Lamps:** 16 light sources from the config (lamps, downlights, ceiling lights, twin spot, festoon). They share a fixed pool of real lights, so there are no shader recompiles. They switch on automatically after dusk.
+- **Compare cameras:** each camera can set its own render time. 02R and 07 render at 13:30, matching the midday sun in those photos.
+

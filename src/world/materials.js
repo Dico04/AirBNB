@@ -22,8 +22,8 @@ export function getMaterials() {
   const oakSet = T.oakPlanks({ base: COLORS.oakBase, light: COLORS.oakLight, dark: COLORS.oakDark });
   const platformSet = T.oakPlanks({ base: COLORS.oakPlatformTop, light: '#e0bc92', dark: '#c49a6c', plankW: 0.18, planks: 6, lengthM: 3.6, px: 512, seed: 17, key: 'oak-platform' });
   M = {
-    plaster: fromSet(T.plaster({ color: COLORS.wall }), { normalScale: new THREE.Vector2(0.4, 0.4) }),
-    ceiling: fromSet(T.plaster({ color: COLORS.ceiling, key: 'ceiling', amp: 0.008 }), { normalScale: new THREE.Vector2(0.25, 0.25) }),
+    plaster: fromSet(T.plaster({ color: COLORS.wall }), { normalScale: new THREE.Vector2(0.16, 0.16) }),
+    ceiling: fromSet(T.plaster({ color: COLORS.ceiling, key: 'ceiling', amp: 0.008 }), { normalScale: new THREE.Vector2(0.1, 0.1) }),
     render: fromSet(T.render({ color: COLORS.render }), { normalScale: new THREE.Vector2(0.3, 0.3) }),
     renderTall: fromSet(T.render({ color: COLORS.renderTallWall, key: 'render-tall', seed: 33 }), { normalScale: new THREE.Vector2(0.25, 0.25) }),
     oakFloor: fromSet(oakSet, { normalScale: new THREE.Vector2(0.6, 0.6) }),
@@ -54,5 +54,10 @@ export function getMaterials() {
     }),
   };
   M.buildingBody = M.render;
+  // Exterior surfaces take the live sky environment instead of the warm interior one.
+  for (const k of ['render', 'renderTall', 'deck', 'parapetBoards', 'gravel', 'coping', 'chimney', 'chimneyCap', 'glass']) M[k].userData.exterior = true;
+  M.glass.userData.envBoost = 1.4;
+  M.deck.userData.envBoost = 0.55;          // weathered wood: little sky reflection, stays warm grey
+  M.parapetBoards.userData.envBoost = 0.8;
   return M;
 }

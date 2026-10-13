@@ -48,11 +48,50 @@ const tests = [
     check: (r) => r.x > 3.45 },
 ];
 let fail = 0;
+const report = (ok, name, detail) => { if (!ok) fail++; console.log(`${ok ? '✓' : '✗'} ${name}  →  ${JSON.stringify(detail)}`); };
+
+// ---- time of day & lights (keys go through the real keydown handler)
+const settle = () => page.evaluate(() => {
+  const { tod, camera } = window.__scene;
+  for (let i = 0; i < 240; i++) tod.update(1 / 60, camera.position);
+  return { hours: +tod.hours.toFixed(2), altitude: +tod.altitude.toFixed(1), lampsOn: tod.lamps.lamps.filter((l) => l.level > 0.99).length,
+           exposure: +window.__scene.renderer.toneMappingExposure.toFixed(2), sunI: +tod.sun.intensity.toFixed(2) };
+});
+await page.keyboard.press('Digit4');
+let r = await settle();
+report(Math.abs(r.hours - 22.75) < 0.02 && r.lampsOn >= 10 && r.altitude < -6, 'key 4 → night, lamps switch on by themselves', r);
+await page.keyboard.press('KeyL');
+r = await settle();
+report(r.lampsOn === 0, 'key L → all lights off', r);
+await page.keyboard.press('KeyL');
+r = await settle();
+report(r.lampsOn === 16, 'key L again → all lights on', r);
+await page.keyboard.press('Digit1');
+r = await settle();
+report(Math.abs(r.hours - 8.5) < 0.02 && r.lampsOn === 0 && r.altitude > 15, 'key 1 → morning (auto lights off, sun up)', r);
+await page.keyboard.press('Digit3');
+r = await settle();
+report(Math.abs(r.hours - 20.5) < 0.02 && r.altitude > 0 && r.altitude < 5, 'key 3 → sunset, sun just above the horizon', r);
+await page.keyboard.press('Digit2');
+r = await settle();
+report(Math.abs(r.hours - 17) < 0.02 && r.sunI > 3, 'key 2 → afternoon', r);
+
 for (const t of tests) {
   const r = await walk({ from: t.from, yawDeg: t.yaw, keys: t.keys, seconds: t.seconds, run: t.run });
-  const ok = t.check(r);
-  if (!ok) fail++;
-  console.log(`${ok ? '✓' : '✗'} ${t.name}  →  ${JSON.stringify(r)}`);
+  report(t.check(r), t.name, r);
+}
+
+// ---- quality presets load without errors
+await page.close();
+for (const q of ['low', 'high']) {
+  const p2 = await browser.newPage({ viewport: { width: 480, height: 300 } });
+  const errs = [];
+  p2.on('pageerror', (e) => errs.push(e.message));
+  await p2.goto(`${server.resolvedUrls.local[0]}?cam=05&w=480&h=300&q=${q}`, { timeout: 120000 });
+  const ok = await p2.waitForFunction(() => window.__ready || window.__error, null, { timeout: 180000 }).then(() => true, () => false);
+  const err = await p2.evaluate(() => window.__error || null);
+  report(ok && !err && !errs.length, `quality preset "${q}" renders`, { err: err || errs[0] || null });
+  await p2.close();
 }
 await browser.close();
 await server.close();

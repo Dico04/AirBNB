@@ -155,6 +155,72 @@ export const TERRACE = {
   buildingBody: { rect: [-0.30, -0.30, 7.45, 14.55] },
 };
 
+// ---------------------------------------------------------------- lighting & time of day
+// Keys 1–4 jump (with a ~2 s animation) to these local times on SITE.defaultDate.
+export const TIME_PRESETS = [
+  { key: 'Digit1', name: 'Morning',   hours: 8.5 },
+  { key: 'Digit2', name: 'Afternoon', hours: 17.0 },
+  { key: 'Digit3', name: 'Sunset',    hours: 20.5 },
+  { key: 'Digit4', name: 'Night',     hours: 22.75 },
+];
+
+// Everything daylight-related is interpolated from these keyframes by SUN ALTITUDE (degrees),
+// so any date/time looks right, not just the presets.
+//   sun / sunI     directional sun colour & intensity       zenith / horizon / ground   sky dome colours
+//   cloudLit / cloudShade  cloud colours                     envExt   sky-IBL strength on exterior materials
+//   envIn          interior IBL strength (warm room proxy)   win / winI  skylight through windows (area lights)
+//   exposure       tone-mapping exposure                     night    0..1 → lamps auto-on, stars, lit city windows
+export const DAYLIGHT_KEYS = [
+  { alt: -20, sun: '#8ea3c9', sunI: 0.10, zenith: '#03060f', horizon: '#141a2a', ground: '#0d1018', cloudLit: '#1b2233', cloudShade: '#0c1019', envExt: 0.35, envIn: 0.16, win: '#7d8bb0', winI: 0.10, exposure: 1.00, night: 1.0 },
+  { alt: -9,  sun: '#9fb2d6', sunI: 0.12, zenith: '#0a1530', horizon: '#26324f', ground: '#141826', cloudLit: '#2b3550', cloudShade: '#141a2a', envExt: 0.40, envIn: 0.19, win: '#8796bd', winI: 0.25, exposure: 1.02, night: 1.0 },
+  { alt: -3,  sun: '#ff9a60', sunI: 0.20, zenith: '#24406f', horizon: '#d88d6a', ground: '#3a3236', cloudLit: '#d58a6e', cloudShade: '#4a4256', envExt: 0.55, envIn: 0.22, win: '#c0a6b8', winI: 0.80, exposure: 1.06, night: 0.85 },
+  { alt: 1,   sun: '#ff8c40', sunI: 1.40, zenith: '#4b6aa2', horizon: '#ffb07a', ground: '#7a675c', cloudLit: '#ffc08a', cloudShade: '#8a7480', envExt: 0.75, envIn: 0.36, win: '#ffd0a6', winI: 2.10, exposure: 1.08, night: 0.30 },
+  { alt: 6,   sun: '#ffaf66', sunI: 2.60, zenith: '#6688c0', horizon: '#ffd4ac', ground: '#9a8a7c', cloudLit: '#ffe2c2', cloudShade: '#a49aa0', envExt: 0.90, envIn: 0.52, win: '#ffe8d2', winI: 2.60, exposure: 1.04, night: 0.0 },
+  { alt: 15,  sun: '#ffd6a2', sunI: 3.30, zenith: '#6b93d0', horizon: '#e9ebec', ground: '#a69c90', cloudLit: '#fff6ec', cloudShade: '#aeb2bc', envExt: 1.00, envIn: 0.62, win: '#fff4e8', winI: 2.80, exposure: 1.02, night: 0.0 },
+  { alt: 35,  sun: '#fff0d8', sunI: 3.70, zenith: '#5a8ad3', horizon: '#e2e9f1', ground: '#aaa49c', cloudLit: '#ffffff', cloudShade: '#b6bcc8', envExt: 1.00, envIn: 0.66, win: '#fbf8f4', winI: 3.10, exposure: 1.00, night: 0.0 },
+  { alt: 65,  sun: '#fff6ea', sunI: 3.90, zenith: '#5688d4', horizon: '#e1e8f1', ground: '#aca69e', cloudLit: '#ffffff', cloudShade: '#bac0cc', envExt: 1.00, envIn: 0.68, win: '#fbfaf8', winI: 3.20, exposure: 0.98, night: 0.0 },
+];
+
+export const LIGHTING = {
+  transitionSeconds: 2.0,
+  moon: { bearing: 150, altitude: 34, color: '#a9bde0' },   // fixed, soft moonlight at night
+  clouds: { cover: 0.50, speed: 0.0035 },                   // scattered cumulus like the listing photos
+  outdoorExposure: 0.62,                                    // eye adaptation: exposure multiplier on the terrace in daylight
+  adaptSeconds: 1.2,
+  fogDensity: 0.0008,                                      // light haze on the distant city
+  lampFadeSeconds: 0.6,
+};
+
+// Interior and terrace lamps (light sources). Fixture geometry for furniture lamps arrives with
+// the furniture; the light positions live here. pos = plan [x, y, h]. intensity in candela.
+// type 'point' | 'spot' (spots aim straight down). auto: switches on by itself after dusk.
+export const LAMPS = [
+  { id: 'living-lamp',   room: 'living',   type: 'point', pos: [5.72, 8.58, 1.00], kelvin: 3000, intensity: 10, auto: true },
+  { id: 'desk-lamp',     room: 'corridor', type: 'point', pos: [3.86, 0.34, 0.98], kelvin: 3000, intensity: 7, auto: true },
+  { id: 'bedside-lamp',  room: 'bedroom',  type: 'point', pos: [0.62, 2.62, 0.80], kelvin: 3000, intensity: 7, auto: true },
+  { id: 'bed-sconce',    room: 'bedroom',  type: 'point', pos: [2.05, 2.62, 1.80], kelvin: 3000, intensity: 7, auto: true },
+  { id: 'corridor-ceil', room: 'corridor', type: 'point', pos: [4.00, 0.80, 2.50], kelvin: 3000, intensity: 30, auto: true, fixture: 'flush' },
+  { id: 'corridor-spot', room: 'corridor', type: 'spot',  pos: [4.62, 0.95, 2.28], kelvin: 3000, intensity: 40, auto: false, fixture: 'twinspot', aim: [3.90, 0.40, 0.75] },
+  { id: 'bar-down-1',    room: 'kitchen',  type: 'spot',  pos: [4.85, 2.45, 2.34], kelvin: 3000, intensity: 45, auto: true, fixture: 'downlight' },
+  { id: 'bar-down-2',    room: 'kitchen',  type: 'spot',  pos: [4.85, 3.35, 2.34], kelvin: 3000, intensity: 45, auto: true, fixture: 'downlight' },
+  { id: 'kitchen-down-1', room: 'kitchen', type: 'spot',  pos: [5.95, 2.55, 2.34], kelvin: 3000, intensity: 45, auto: true, fixture: 'downlight' },
+  { id: 'kitchen-down-2', room: 'kitchen', type: 'spot',  pos: [6.15, 3.55, 2.34], kelvin: 3000, intensity: 45, auto: true, fixture: 'downlight' },
+  { id: 'bath-ceil',     room: 'bathroom', type: 'point', pos: [5.95, 0.90, 2.52], kelvin: 3500, intensity: 30, auto: true, fixture: 'flush' },
+  // Festoon string lights on the terrace: each source stands in for ~8 warm bulbs.
+  { id: 'festoon-s1', room: 'terrace', type: 'point', pos: [1.70, 14.12, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+  { id: 'festoon-s2', room: 'terrace', type: 'point', pos: [3.90, 14.12, 1.18], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+  { id: 'festoon-s3', room: 'terrace', type: 'point', pos: [6.10, 14.12, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+  { id: 'festoon-e1', room: 'terrace', type: 'point', pos: [7.08, 10.60, 1.20], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+  { id: 'festoon-e2', room: 'terrace', type: 'point', pos: [7.08, 12.70, 1.18], kelvin: 2400, intensity: 5, auto: true, group: 'festoon' },
+];
+
+// Render quality presets (?q=low|medium|high; menu in step 6).
+export const QUALITY = {
+  low:    { pixelRatio: 1.0, shadowMap: 1024, ao: 'Performance', aoHalfRes: true,  bloom: false, smaa: false, windowLights: 2, pointSlots: 3, spotSlots: 2 },
+  medium: { pixelRatio: 1.5, shadowMap: 2048, ao: 'Medium',      aoHalfRes: true,  bloom: true,  smaa: true,  windowLights: 5, pointSlots: 5, spotSlots: 4 },
+  high:   { pixelRatio: 2.0, shadowMap: 4096, ao: 'High',        aoHalfRes: false, bloom: true,  smaa: true,  windowLights: 5, pointSlots: 8, spotSlots: 6 },
+};
+
 export const PLAYER = {
   eyeHeight: 1.65,
   radius: 0.22,
@@ -169,16 +235,17 @@ export const PLAYER = {
 // Camera poses that reproduce each reference photo (for tools/compare.mjs).
 // eye in plan coords [x, y, h]; either `target` [x, y, h] or `yaw`/`pitch` in degrees
 // (yaw = plan bearing clockwise from plan-north, pitch positive = up). fov = vertical FOV.
-// crop = fraction of the reference image [x0, y0, x1, y1]. Poses marked `solved` were fitted
+// time = local hour to render at (default SITE.defaultTime); the terrace photos were shot
+// around midday. crop = fraction of the reference image [x0, y0, x1, y1]. Poses marked `solved` were fitted
 // to measured photo points; the others are hand-placed and get refined as furniture arrives.
 export const COMPARE_CAMERAS = [
   { id: '01L', ref: '01.jpg', crop: [0, 0, 0.515, 1], eye: [2.45, 0.35, 1.45], target: [0.75, 2.90, 0.95], fov: 60 },
-  { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [5.40, 12.30, 1.55], target: [0.60, 12.90, 1.05], fov: 58 },
+  { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [5.40, 12.30, 1.55], target: [0.60, 12.90, 1.05], fov: 58, time: 13.5 },
   { id: '03',  ref: '03.jpg', crop: [0, 0, 1, 1], eye: [3.76, 5.98, 1.68], yaw: 151.9, pitch: -14.3, fov: 53.2, solved: true },
   { id: '04',  ref: '04.jpg', crop: [0, 0, 1, 1], eye: [3.70, 2.85, 1.70], target: [7.10, 2.80, 1.00], fov: 50 },
   { id: '05',  ref: '05.jpg', crop: [0, 0, 1, 1], eye: [3.77, 8.55, 1.29], yaw: -1.6, pitch: -4.9, fov: 36, solved: true },
   { id: '06',  ref: '06.jpg', crop: [0, 0, 1, 1], eye: [5.41, 7.39, 1.58], yaw: 345.8, pitch: -3.2, fov: 40.7, solved: true },
-  { id: '07',  ref: '07.jpg', crop: [0, 0, 1, 1], eye: [2.40, 11.00, 1.55], target: [7.25, 12.40, 0.95], fov: 55 },
+  { id: '07',  ref: '07.jpg', crop: [0, 0, 1, 1], eye: [2.40, 11.00, 1.55], target: [7.25, 12.40, 0.95], fov: 55, time: 13.5 },
   { id: '08L', ref: '08.jpg', crop: [0, 0, 0.5, 1], eye: [5.15, 0.45, 1.45], target: [6.90, 1.60, 0.80], fov: 58 },
   { id: '08R', ref: '08.jpg', crop: [0.5, 0, 1, 1], eye: [6.40, 1.05, 1.30], target: [6.40, 0.05, 1.15], fov: 42 },
   { id: '09L', ref: '09.jpg', crop: [0, 0, 0.5, 1], eye: [3.95, 1.05, 1.25], target: [3.60, 0.00, 0.90], fov: 46 },

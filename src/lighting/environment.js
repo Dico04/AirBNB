@@ -54,11 +54,18 @@ export class EnvironmentLighting {
     this.exteriorIntensity = 1;
   }
 
+  // Exterior materials (userData.exterior) get the sky env; interior materials that need their
+  // own reflection strength (userData.envScale, e.g. black glass) get the interior env explicitly.
   registerExteriorMaterials(root) {
+    this.scaledMaterials ||= new Set();
     root.traverse((o) => {
       if (!o.isMesh) return;
       const mats = Array.isArray(o.material) ? o.material : [o.material];
-      for (const m of mats) if (m && m.userData.exterior) this.exteriorMaterials.add(m);
+      for (const m of mats) {
+        if (!m) continue;
+        if (m.userData.exterior) this.exteriorMaterials.add(m);
+        else if (m.userData.envScale !== undefined) this.scaledMaterials.add(m);
+      }
     });
     this.applyExterior();
   }
@@ -68,6 +75,11 @@ export class EnvironmentLighting {
     for (const m of this.exteriorMaterials) {
       if (m.envMap !== tex) { m.envMap = tex; m.needsUpdate = true; }
       m.envMapIntensity = this.exteriorIntensity * (m.userData.envBoost ?? 1);
+    }
+    const itex = this.interiorRT ? this.interiorRT.texture : null;
+    for (const m of this.scaledMaterials || []) {
+      if (m.envMap !== itex) { m.envMap = itex; m.needsUpdate = true; }
+      m.envMapIntensity = (this.interiorIntensity ?? 1) * m.userData.envScale;
     }
   }
 

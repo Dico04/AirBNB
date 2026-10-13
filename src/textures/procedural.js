@@ -28,7 +28,7 @@ function toTexture(canvas, { color = false } = {}) {
 }
 
 // Generic builder: gen(x, y, out) writes out.r/g/b (0..255), out.rough (0..1), out.h (height 0..1).
-function buildSet(key, w, h, size, normalStrength, gen) {
+export function buildSet(key, w, h, size, normalStrength, gen) {
   if (cache.has(key)) return cache.get(key);
   const col = new Uint8ClampedArray(w * h * 4);
   const rough = new Uint8ClampedArray(w * h * 4);
@@ -78,7 +78,7 @@ function buildSet(key, w, h, size, normalStrength, gen) {
   return set;
 }
 
-const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+export const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 
 // ---------------------------------------------------------------- oak planks
 // Wide white-oiled oak planks. U = across planks (x), V = along planks.

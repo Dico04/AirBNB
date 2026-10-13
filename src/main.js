@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { PLAYER, COMPARE_CAMERAS, QUALITY, TIME_PRESETS } from './apartment.config.js';
+import { PLAYER, COMPARE_CAMERAS, QUALITY, TIME_PRESETS, FURNITURE } from './apartment.config.js';
 import { setMaxAnisotropy } from './textures/procedural.js';
 import { CollisionWorld } from './player/collision.js';
 import { FirstPersonController } from './player/controls.js';
@@ -8,6 +8,8 @@ import { buildTerrace } from './world/terrace.js';
 import { buildOpenings } from './world/openings.js';
 import { TimeOfDay } from './lighting/timeOfDay.js';
 import { createPost } from './render/post.js';
+import { buildFurniture } from './props/index.js';
+import { mergeStatic } from './util/merge.js';
 
 const params = new URLSearchParams(location.search);
 const compareId = params.get('cam');
@@ -68,12 +70,17 @@ const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
 async function init() {
   await nextFrame();
   const collision = new CollisionWorld();
-  scene.add(buildShell(collision));
-  scene.add(buildTerrace(collision));
+  const shell = buildShell(collision);
+  const terrace = buildTerrace(collision);
   const openings = buildOpenings(collision);
-  scene.add(openings.group);
+  scene.add(shell, terrace, openings.group);
+  for (const g of [shell, terrace, openings.group]) mergeStatic(g, { name: `${g.name}-merged` });
 
   const tod = new TimeOfDay({ renderer, scene, quality });
+  const staged = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId)?.overrides : null;
+  if (staged?.oliveSpot) FURNITURE.living.oliveTree.spot = staged.oliveSpot;
+  if (params.has('olive')) FURNITURE.living.oliveTree.spot = params.get('olive');
+  scene.add(buildFurniture(collision, tod.lamps));
   const shotCam = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId) : null;
   if (params.has('t')) tod.setTime(Number(params.get('t')));
   else if (shotCam?.time !== undefined) tod.setTime(shotCam.time);

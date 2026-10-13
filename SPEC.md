@@ -492,3 +492,34 @@ Sources consulted for the landmark:
 - **Lamps:** 16 light sources from the config (lamps, downlights, ceiling lights, twin spot, festoon). They share a fixed pool of real lights, so there are no shader recompiles. They switch on automatically after dusk.
 - **Compare cameras:** each camera can set its own render time. 02R and 07 render at 13:30, matching the midday sun in those photos.
 
+
+### Step 4: furniture and props (entrance, kitchen, living room, corridor, bedroom, bathroom)
+- **Every room is furnished from `FURNITURE` in the config:**
+  - kitchen: U-run, walnut herringbone top, hob, oven, hood, sink, microwave column, fridge, bar and stools, props
+  - living room: velvet L-sectional, Noguchi-style table, cane sideboard with TV and lamp, portrait, olive tree, basket
+  - entrance: straw hanging, hooks, intercom, teak stool with cactus
+  - corridor nook: pine desk, drawer unit, trestle, cork board, wishbone chair, sunburst mirror, vase, lamp, print, jug
+  - bedroom: bed with throw and pillows, cane nightstand, gourd lamp, bamboo sconce, radiator
+  - bathroom: bath with black mixer, towel radiator, strelitzia, vanity, mirror, WC ledge and props
+- **No placeholder boxes:**
+  - Hard furniture uses bevelled rounded boxes, extrusions and lathe profiles.
+  - Upholstery and bedding use a soft-cushion generator: domed faces, the seam as the outermost line, pinched corners, slight creases, smooth shading across seams.
+  - Plants use instanced leaves.
+  - Wood, fabrics, cane, macramé, cork and ceramics have their own procedural textures.
+- **Living-room window resized to 0.90 × 1.48 m** (x 4.32–5.22, sill 0.86, head 2.34; was 0.95 × 1.40). Photo 03 shows a clearly taller, narrower opening.
+- **Sofa and table:** sofa back at y 5.90 (seats to 6.90), chaise to 8.15, coffee table centred at (4.25, 7.40).
+  - Photos 03 and 06 put the sofa further north than photo 05 does; this is the compromise.
+  - Photo 06 shows the sofa well north of where 03 and 05 place it. It was probably moved between shoots, so we follow 03 and 05.
+- **One olive tree, two spots:** next to the kitchen (default, as in photo 06) and against the east wall (as in photo 03, used by that compare camera only).
+- **Desk props** moved to match photo 09: the vase and lamp sit further west, the jug east of the print.
+- **Brighter, listing-style exposure:** interior renders were 20–30 grey levels darker than the photos.
+  - Daytime exposure is up about 30%.
+  - Terrace eye adaptation went from ×0.62 to ×0.48, so the terrace keeps the same brightness.
+- **Compare cameras:**
+  - 03 is re-fitted to the architecture and raised to a standing height, so the sofa, table and window line up like the photo.
+  - 09L and 09R are pulled back with longer lenses.
+- **Collision:** every furniture piece has a collider (sofa, chaise, table, sideboard, bar, stools, desk, chair, bed, nightstand, bath, vanity, WC ledge). `tools/walktest.mjs` now also checks the sofa and bar.
+- **Performance:** static meshes are merged per material at load. Living-room views run about 280–410 draw calls and 0.3–0.4 M triangles; Step 7 handles further optimisation.
+- **Known gaps for later steps:**
+  - TV screen content and lamp switching (Step 6)
+  - terrace furniture, view out of the windows, skyline (Step 5)

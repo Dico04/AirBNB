@@ -121,6 +121,7 @@ function hingedLeaf(spec, W, t, originAt, M, collision, group) {
   const jamb = spec.type === 'front' ? 0.04 : 0.024;
   const { w: lw, h: lh, t: lt } = spec.leaf;
   const pivot = new THREE.Group();
+  pivot.userData.dynamic = true;
   const leafZ = t - lt / 2 - (spec.type === 'front' ? 0.012 : 0.004);
   pivot.position.set(hingeLocalX === 0 ? jamb + 0.003 : W - jamb - 0.003, 0, leafZ + lt / 2);
   const dir = hingeLocalX === 0 ? 1 : -1;       // leaf extends +X or -X from the pivot
@@ -241,9 +242,11 @@ function buildSlidingDoor(M, collision) {
   };
   // Fixed leaf (outer track) on the west half = local +X side; sliding leaf (inner track) on the east half.
   const fixed = makeLeaf(zc - 0.04, false);
+  fixed.userData.dynamic = true;
   fixed.position.x = W - f - leafW;
   group.add(fixed);
   const sliding = makeLeaf(zc + 0.04, true);
+  sliding.userData.dynamic = true;
   const closedX = f, openX = f + (leafW - 0.06) * S.openFraction;
   sliding.position.x = openX;
   group.add(sliding);

@@ -94,7 +94,7 @@ export const WALLS = [
   { id: 'facade',        rect: [0.60, 9.05, 7.40, 9.35], outside: 's',
     openings: [
       { id: 'D-slide',  from: 1.80, to: 4.00, bottom: 0.40, top: 2.50 },
-      { id: 'W-living', from: 4.40, to: 5.35, bottom: 0.90, top: 2.30 },
+      { id: 'W-living', from: 4.32, to: 5.22, bottom: 0.86, top: 2.34 },
     ] },
   { id: 'pillar',        rect: [4.70, 3.80, 5.10, 4.20] },
   { id: 'chimney-breast', rect: [6.65, 8.60, 7.10, 9.05] },
@@ -155,6 +155,83 @@ export const TERRACE = {
   buildingBody: { rect: [-0.30, -0.30, 7.45, 14.55] },
 };
 
+// ---------------------------------------------------------------- furniture & props (step 4)
+// Plan coords [x, y], heights h above the floor. `face` = plan bearing the front of an object
+// points to (0 = plan north, 90 = east, 180 = south, 270 = west).
+export const FURNITURE = {
+  entrance: {
+    hookRail: { x: [2.45, 2.75], h: 1.55, hooks: 6, color: '#1a1a1a' },
+    intercom: { x: 2.30, h: 1.95 },
+    thermostat: { x: 2.30, h: 1.22 },
+    switch: { x: 2.25, h: 0.95 },
+    stool: { pos: [2.95, 4.34], size: [0.45, 0.25, 0.45], color: '#a47a58' },
+    cactus: { height: 0.86, color: '#3a4a2e', pot: { r: 0.11, h: 0.21, color: '#a88466' } },
+    strawHanging: { wallX: 0.90, y: 5.40, h: 1.82, diameter: 0.86, color: '#c9a574' },
+  },
+  corridor: {
+    desk: { x: [3.30, 4.70], y: [0.03, 0.55], top: 0.75, thick: 0.03, color: '#ddb483' },
+    drawers: { x: [3.32, 3.68], color: '#1e1e1e' },
+    trestleX: 4.56,
+    cork: { y: [0.06, 0.52], h: [0.75, 1.00], color: '#9a7a5a' },
+    chair: { pos: [4.02, 0.86], face: 0, frame: '#d6b48a', seat: '#cdb28a' },
+    mirror: { x: 3.56, h: 1.58, d: 0.50, color: '#c8a57e' },
+    vase: { pos: [3.44, 0.24], color: '#76685d' },
+    lamp: { pos: [3.66, 0.30], base: '#c9a27a', shade: '#f1ece3' },
+    print: { pos: [4.38, 0.10], size: [0.50, 0.55] },
+    jug: { pos: [4.50, 0.30], color: '#5f6869' },
+  },
+  kitchen: {
+    counterTop: 0.92, counterThick: 0.04, plinth: 0.10,
+    walnut: '#7a4a32', cabinet: '#f2f2f0',
+    bar: { top: [4.40, 1.90, 5.30, 3.80], base: [4.70, 1.90, 5.30, 3.80] },
+    north: [5.30, 1.90, 6.50, 2.50],
+    east: [6.50, 1.90, 7.10, 3.60],
+    fridge: [6.50, 3.60, 7.10, 4.20],
+    hob: { center: [5.70, 2.20], size: [0.58, 0.51] },
+    oven: { x: [5.40, 6.00] },
+    hood: { x: 5.70, bottom: 1.55, visor: [0.60, 0.50] },
+    sink: { center: [6.80, 2.32], r: 0.20 },
+    microwaveUnit: { x: [6.75, 7.10], y: [2.65, 3.25], h: [1.40, 2.35] },
+    print: { y: 2.20, h: 1.62, size: [0.30, 0.40] },
+    stools: [[4.18, 2.80], [4.18, 3.30]], stoolColor: '#5e2f1e',
+    props: {
+      breadBin: [4.82, 2.16], wickerBottle: [4.56, 2.04], fruitBowl: [6.20, 2.22], oil: [[6.00, 2.05], [6.07, 2.13]],
+      boards: [7.02, 1.98], pot: [6.96, 2.62], coffee: [6.84, 3.13], jar: [6.86, 3.42],
+    },
+  },
+  living: {
+    sofa: { x: [2.00, 4.95], backY: 5.90, depth: 1.00, seatH: 0.44, backH: 0.80, armW: 0.24, armH: 0.62,
+            chaiseX: [2.00, 2.95], chaiseEndY: 8.15, color: '#a39189', piping: '#8a7a72' },
+    macrame: { color: '#ede7dd' },
+    coffeeTable: { center: [4.25, 7.40], rotDeg: 8, size: [1.27, 0.92], top: 0.40, wood: '#b8743f' },
+    sideboard: { x: [5.62, 6.65], y: [8.63, 9.05], h: 0.62, legs: 0.17, oak: '#c49464', cane: '#ddbb8e' },
+    tv: { x: 6.20, size: [0.74, 0.44] },
+    lamp: { pos: [5.80, 8.84], base: '#a87f70', shade: '#f1eeea' },
+    portrait: { x: 5.44, h: 1.62, size: [0.25, 0.34], frame: '#4a3226' },
+    oliveTree: { spot: 'kitchen', spots: { kitchen: [6.30, 4.78], eastWall: [6.80, 7.70] }, pot: '#1e2433', stool: '#9b6f4e' },
+    basket: { pos: [1.68, 8.02], color: '#a47e5b' },
+  },
+  bedroom: {
+    bed: { x: [0.90, 2.30], y: [0.90, 2.90], mattressTop: 0.55, headboard: '#2a2a2e', sheet: '#f4f2ee' },
+    throwColor: '#e2cfb9', pillow: '#cfa18a',
+    nightstand: { pos: [0.57, 2.69], size: [0.42, 0.38, 0.50], frame: '#b88a60', cane: '#d9b98c' },
+    lampBase: '#5f6253',
+    sconce: { x: 2.05, h: 1.85, color: '#c7a27c' },
+    switch: { x: 0.80, h: 1.15 },
+    radiator: { y: [1.83, 2.53], h: [0.15, 0.75] },
+  },
+  bathroom: {
+    bath: { outer: [5.50, 1.00, 7.10, 1.80], inner: [5.62, 1.06, 6.98, 1.56], deck: 0.58 },
+    mixer: { y: 1.30, h: 0.80 },
+    towelRadiator: { x: [6.18, 6.68], h: [1.05, 2.25] },
+    plant: { pos: [6.44, 1.69] },
+    vanity: { x: [4.85, 5.45], y: [1.32, 1.80], h: 0.85, oak: '#d8bfa0', top: '#2e2f31' },
+    mirror: { x: 5.15, h: 1.55, d: 0.50 },
+    bucket: { pos: [5.36, 1.56] },
+    wc: { x: [6.10, 6.70], ledgeH: 1.10, ledgeDepth: 0.20 },
+  },
+};
+
 // ---------------------------------------------------------------- lighting & time of day
 // Keys 1–4 jump (with a ~2 s animation) to these local times on SITE.defaultDate.
 export const TIME_PRESETS = [
@@ -174,18 +251,18 @@ export const DAYLIGHT_KEYS = [
   { alt: -20, sun: '#8ea3c9', sunI: 0.10, zenith: '#03060f', horizon: '#141a2a', ground: '#0d1018', cloudLit: '#1b2233', cloudShade: '#0c1019', envExt: 0.35, envIn: 0.16, win: '#7d8bb0', winI: 0.10, exposure: 1.00, night: 1.0 },
   { alt: -9,  sun: '#9fb2d6', sunI: 0.12, zenith: '#0a1530', horizon: '#26324f', ground: '#141826', cloudLit: '#2b3550', cloudShade: '#141a2a', envExt: 0.40, envIn: 0.19, win: '#8796bd', winI: 0.25, exposure: 1.02, night: 1.0 },
   { alt: -3,  sun: '#ff9a60', sunI: 0.20, zenith: '#24406f', horizon: '#d88d6a', ground: '#3a3236', cloudLit: '#d58a6e', cloudShade: '#4a4256', envExt: 0.55, envIn: 0.22, win: '#c0a6b8', winI: 0.80, exposure: 1.06, night: 0.85 },
-  { alt: 1,   sun: '#ff8c40', sunI: 1.40, zenith: '#4b6aa2', horizon: '#ffb07a', ground: '#7a675c', cloudLit: '#ffc08a', cloudShade: '#8a7480', envExt: 0.75, envIn: 0.36, win: '#ffd0a6', winI: 2.10, exposure: 1.08, night: 0.30 },
-  { alt: 6,   sun: '#ffaf66', sunI: 2.60, zenith: '#6688c0', horizon: '#ffd4ac', ground: '#9a8a7c', cloudLit: '#ffe2c2', cloudShade: '#a49aa0', envExt: 0.90, envIn: 0.52, win: '#ffe8d2', winI: 2.60, exposure: 1.04, night: 0.0 },
-  { alt: 15,  sun: '#ffd6a2', sunI: 3.30, zenith: '#6b93d0', horizon: '#e9ebec', ground: '#a69c90', cloudLit: '#fff6ec', cloudShade: '#aeb2bc', envExt: 1.00, envIn: 0.62, win: '#fff4e8', winI: 2.80, exposure: 1.02, night: 0.0 },
-  { alt: 35,  sun: '#fff0d8', sunI: 3.70, zenith: '#5a8ad3', horizon: '#e2e9f1', ground: '#aaa49c', cloudLit: '#ffffff', cloudShade: '#b6bcc8', envExt: 1.00, envIn: 0.66, win: '#fbf8f4', winI: 3.10, exposure: 1.00, night: 0.0 },
-  { alt: 65,  sun: '#fff6ea', sunI: 3.90, zenith: '#5688d4', horizon: '#e1e8f1', ground: '#aca69e', cloudLit: '#ffffff', cloudShade: '#bac0cc', envExt: 1.00, envIn: 0.68, win: '#fbfaf8', winI: 3.20, exposure: 0.98, night: 0.0 },
+  { alt: 1,   sun: '#ff8c40', sunI: 1.40, zenith: '#4b6aa2', horizon: '#ffb07a', ground: '#7a675c', cloudLit: '#ffc08a', cloudShade: '#8a7480', envExt: 0.75, envIn: 0.36, win: '#ffd0a6', winI: 2.10, exposure: 1.19, night: 0.30 },
+  { alt: 6,   sun: '#ffaf66', sunI: 2.60, zenith: '#6688c0', horizon: '#ffd4ac', ground: '#9a8a7c', cloudLit: '#ffe2c2', cloudShade: '#a49aa0', envExt: 0.90, envIn: 0.52, win: '#ffe8d2', winI: 2.60, exposure: 1.27, night: 0.0 },
+  { alt: 15,  sun: '#ffd6a2', sunI: 3.30, zenith: '#6b93d0', horizon: '#e9ebec', ground: '#a69c90', cloudLit: '#fff6ec', cloudShade: '#aeb2bc', envExt: 1.00, envIn: 0.62, win: '#fff4e8', winI: 2.80, exposure: 1.33, night: 0.0 },
+  { alt: 35,  sun: '#fff0d8', sunI: 3.70, zenith: '#5a8ad3', horizon: '#e2e9f1', ground: '#aaa49c', cloudLit: '#ffffff', cloudShade: '#b6bcc8', envExt: 1.00, envIn: 0.66, win: '#fbf8f4', winI: 3.10, exposure: 1.32, night: 0.0 },
+  { alt: 65,  sun: '#fff6ea', sunI: 3.90, zenith: '#5688d4', horizon: '#e1e8f1', ground: '#aca69e', cloudLit: '#ffffff', cloudShade: '#bac0cc', envExt: 1.00, envIn: 0.68, win: '#fbfaf8', winI: 3.20, exposure: 1.29, night: 0.0 },
 ];
 
 export const LIGHTING = {
   transitionSeconds: 2.0,
   moon: { bearing: 150, altitude: 34, color: '#a9bde0' },   // fixed, soft moonlight at night
   clouds: { cover: 0.50, speed: 0.0035 },                   // scattered cumulus like the listing photos
-  outdoorExposure: 0.62,                                    // eye adaptation: exposure multiplier on the terrace in daylight
+  outdoorExposure: 0.48,                                    // eye adaptation: exposure multiplier on the terrace in daylight
   adaptSeconds: 1.2,
   fogDensity: 0.0008,                                      // light haze on the distant city
   lampFadeSeconds: 0.6,
@@ -195,8 +272,8 @@ export const LIGHTING = {
 // the furniture; the light positions live here. pos = plan [x, y, h]. intensity in candela.
 // type 'point' | 'spot' (spots aim straight down). auto: switches on by itself after dusk.
 export const LAMPS = [
-  { id: 'living-lamp',   room: 'living',   type: 'point', pos: [5.72, 8.58, 1.00], kelvin: 3000, intensity: 10, auto: true },
-  { id: 'desk-lamp',     room: 'corridor', type: 'point', pos: [3.86, 0.34, 0.98], kelvin: 3000, intensity: 7, auto: true },
+  { id: 'living-lamp',   room: 'living',   type: 'point', pos: [5.80, 8.62, 1.02], kelvin: 3000, intensity: 10, auto: true },
+  { id: 'desk-lamp',     room: 'corridor', type: 'point', pos: [3.66, 0.34, 0.98], kelvin: 3000, intensity: 7, auto: true },
   { id: 'bedside-lamp',  room: 'bedroom',  type: 'point', pos: [0.62, 2.62, 0.80], kelvin: 3000, intensity: 7, auto: true },
   { id: 'bed-sconce',    room: 'bedroom',  type: 'point', pos: [2.05, 2.62, 1.80], kelvin: 3000, intensity: 7, auto: true },
   { id: 'corridor-ceil', room: 'corridor', type: 'point', pos: [4.00, 0.80, 2.50], kelvin: 3000, intensity: 30, auto: true, fixture: 'flush' },
@@ -235,19 +312,20 @@ export const PLAYER = {
 // Camera poses that reproduce each reference photo (for tools/compare.mjs).
 // eye in plan coords [x, y, h]; either `target` [x, y, h] or `yaw`/`pitch` in degrees
 // (yaw = plan bearing clockwise from plan-north, pitch positive = up). fov = vertical FOV.
+// overrides: per-photo staging (e.g. the olive tree stood by the east wall in photo 03).
 // time = local hour to render at (default SITE.defaultTime); the terrace photos were shot
 // around midday. crop = fraction of the reference image [x0, y0, x1, y1]. Poses marked `solved` were fitted
 // to measured photo points; the others are hand-placed and get refined as furniture arrives.
 export const COMPARE_CAMERAS = [
   { id: '01L', ref: '01.jpg', crop: [0, 0, 0.515, 1], eye: [2.45, 0.35, 1.45], target: [0.75, 2.90, 0.95], fov: 60 },
   { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [5.40, 12.30, 1.55], target: [0.60, 12.90, 1.05], fov: 58, time: 13.5 },
-  { id: '03',  ref: '03.jpg', crop: [0, 0, 1, 1], eye: [3.76, 5.98, 1.68], yaw: 151.9, pitch: -14.3, fov: 53.2, solved: true },
+  { id: '03',  ref: '03.jpg', crop: [0, 0, 1, 1], eye: [4.02, 5.05, 1.45], yaw: 161.6, pitch: -11, fov: 50, solved: true, overrides: { oliveSpot: 'eastWall' } },
   { id: '04',  ref: '04.jpg', crop: [0, 0, 1, 1], eye: [3.70, 2.85, 1.70], target: [7.10, 2.80, 1.00], fov: 50 },
   { id: '05',  ref: '05.jpg', crop: [0, 0, 1, 1], eye: [3.77, 8.55, 1.29], yaw: -1.6, pitch: -4.9, fov: 36, solved: true },
   { id: '06',  ref: '06.jpg', crop: [0, 0, 1, 1], eye: [5.41, 7.39, 1.58], yaw: 345.8, pitch: -3.2, fov: 40.7, solved: true },
   { id: '07',  ref: '07.jpg', crop: [0, 0, 1, 1], eye: [2.40, 11.00, 1.55], target: [7.25, 12.40, 0.95], fov: 55, time: 13.5 },
   { id: '08L', ref: '08.jpg', crop: [0, 0, 0.5, 1], eye: [5.15, 0.45, 1.45], target: [6.90, 1.60, 0.80], fov: 58 },
   { id: '08R', ref: '08.jpg', crop: [0.5, 0, 1, 1], eye: [6.40, 1.05, 1.30], target: [6.40, 0.05, 1.15], fov: 42 },
-  { id: '09L', ref: '09.jpg', crop: [0, 0, 0.5, 1], eye: [3.95, 1.05, 1.25], target: [3.60, 0.00, 0.90], fov: 46 },
-  { id: '09R', ref: '09.jpg', crop: [0.5, 0, 1, 1], eye: [4.15, 0.75, 1.05], target: [4.45, 0.05, 0.90], fov: 44 },
+  { id: '09L', ref: '09.jpg', crop: [0, 0, 0.5, 1], eye: [3.75, 2.30, 1.35], target: [3.56, 0.00, 1.10], fov: 44 },
+  { id: '09R', ref: '09.jpg', crop: [0.5, 0, 1, 1], eye: [4.35, 1.75, 1.20], target: [4.40, 0.10, 0.95], fov: 30 },
 ];

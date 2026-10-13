@@ -40,6 +40,15 @@ npm run preview    # serve the built dist/ locally
 
 All of it is tunable in `DAYLIGHT_KEYS`, `LIGHTING`, `LAMPS` and `QUALITY` in the config.
 
+**Furniture and props (Step 4):** the entrance, kitchen, living room, corridor desk nook, bedroom and bathroom are fully furnished, matching the listing photos. Everything is built from code:
+- bevelled and rounded geometry
+- a soft-cushion generator (domed, piped seams, pinched corners, slight creases) for the sofa, pillows and bedding
+- lathe-turned ceramics
+- instanced olive and strelitzia leaves
+- procedural textures for wood grain, velvet, linen, cane webbing, macramé, cork, stoneware and brushed steel
+
+The terrace furniture and the city skyline come in Step 5.
+
 ## Tweaking the apartment
 
 Every dimension, colour and position is in **`src/apartment.config.js`**:
@@ -66,8 +75,10 @@ These tools use Playwright 1.56.1. On a new machine, run `npx playwright install
 src/apartment.config.js   all dimensions, colours, positions, compare camera poses
 src/main.js               renderer, scene assembly, loop, compare/debug camera modes
 src/world/                shell (walls, floors, roof), openings (windows, doors), terrace, materials
-src/textures/             procedural PBR texture generators (oak, tiles, plaster, decking, …)
+src/textures/             procedural PBR texture generators (oak, tiles, plaster, decking, wood grain, fabrics, cane, …)
+src/util/                 geometry helpers (world-space UVs, rounded boxes) and static mesh merging
 src/lighting/             sun position, sky dome, environment maps, window lights, lamps, time-of-day controller
+src/props/                furniture & props per room (kitchen, living, corridor, bedroom, bathroom), plants, shared kit
 src/render/post.js        post-processing chain (N8AO, bloom, ACES, vignette, SMAA)
 src/player/               first-person controller and height-aware collision
 tools/                    compare, ad-hoc shot and walk-test scripts (Playwright)

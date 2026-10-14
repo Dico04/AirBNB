@@ -4,7 +4,7 @@ A walkable, browser-based 3D model of a top-floor Airbnb apartment and its roof 
 
 `SPEC.md` holds the floor plan, the per-room inventory and the decisions behind them. The reference photos are in `reference/`.
 
-**Live:** https://dico04.github.io/AirBNB/ (every push to `main` redeploys it through `.github/workflows/pages.yml`)
+**Live:** https://dico04.github.io/AirBNB/ (every push to `main` rebuilds the site and publishes it to the `gh-pages` branch, see `.github/workflows/pages.yml`)
 
 ## Run
 

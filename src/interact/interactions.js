@@ -157,8 +157,10 @@ export class Interactions {
 
   update(dt, active = true) {
     // animate doors
+    this.animating = false;
     for (const s of Object.values(this.doorState)) {
       if (Math.abs(s.angle - s.target) < 1e-4) continue;
+      this.animating = true;
       const speed = s.sliding ? 1.4 : 140;       // fraction/s or deg/s
       s.angle += Math.sign(s.target - s.angle) * Math.min(Math.abs(s.target - s.angle), speed * dt);
       if (s.sliding) s.ctrl.setOpen(s.angle); else s.ctrl.setAngle(s.angle);

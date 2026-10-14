@@ -11,6 +11,7 @@ import { createPost } from './render/post.js';
 import { buildFurniture } from './props/index.js';
 import { buildCity } from './world/city.js';
 import { mergeStatic } from './util/merge.js';
+import { AutoResolution } from './render/autoRes.js';
 import { Interactions } from './interact/interactions.js';
 import { Avatar } from './player/avatar.js';
 import { Tour } from './tour/tour.js';
@@ -43,6 +44,8 @@ renderer.toneMapping = THREE.NoToneMapping;          // ACES is applied in post 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.shadowMap.autoUpdate = false;     // re-rendered only when the sun, a door or the figure moves
+renderer.shadowMap.needsUpdate = true;
 renderer.info.autoReset = false;   // count every pass of a frame (post-processing renders several)
 app.appendChild(renderer.domElement);
 setMaxAnisotropy(renderer.capabilities.getMaxAnisotropy());
@@ -238,11 +241,23 @@ async function init() {
     if (e.code === 'KeyV') toggleView();
   });
 
+  const autoRes = new AutoResolution({
+    renderer,
+    maxRatio: Math.min(window.devicePixelRatio, quality.pixelRatio),
+    minRatio: qualityName === 'high' ? 0.75 : 0.55,
+    enabled: params.get('autores') !== '0',
+    apply: (r) => { renderer.setPixelRatio(r); resize(); },
+  });
+  window.__scene.autoRes = autoRes;
+
   const clock = new THREE.Clock();
   let frames = 0, acc = 0;
   const eye = new THREE.Vector3();
+  let avatarWasVisible = false;
   renderer.setAnimationLoop(() => {
-    const dt = Math.min(clock.getDelta(), 0.1);
+    const raw = clock.getDelta();
+    const dt = Math.min(raw, 0.1);
+    autoRes.update(raw);
     if (tour.active) {
       tour.update(dt);
       interactions.originOverride = null;
@@ -256,13 +271,17 @@ async function init() {
       }
     }
     interactions.update(dt, started && !menu.open && !tour.active);
+    // shadow map: refresh only when something that casts into it moved
+    const avatarVisible = avatar.root.visible;
+    if (interactions.animating || (avatarVisible && controls.moving) || avatarVisible !== avatarWasVisible) renderer.shadowMap.needsUpdate = true;
+    avatarWasVisible = avatarVisible;
     touchCtl?.setUseAvailable(Boolean(interactions.hover));
     tod.update(dt, camera.position);
     renderer.info.reset();
     post.render(dt);
     frames++; acc += dt;
     if (acc >= 0.5) {
-      fpsEl.textContent = `${Math.round(frames / acc)} fps · ${renderer.info.render.calls} draws · ${qualityName} · ${tod.label}`;
+      fpsEl.textContent = `${Math.round(frames / acc)} fps · ${renderer.info.render.calls} draws · ${qualityName} ${autoRes.ratio.toFixed(2)}× · ${tod.label}`;
       frames = 0; acc = 0;
     }
   });

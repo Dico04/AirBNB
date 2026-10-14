@@ -372,10 +372,11 @@ export const TOUR = {
   ],
 };
 
-// Render quality presets (?q=low|medium|high; menu in step 6).
+// Render quality presets (?q=low|medium|high or the Esc menu). pixelRatio is the ceiling for the
+// automatic resolution scaler; windowLights = size of the window area-light pool.
 export const QUALITY = {
   low:    { pixelRatio: 1.0, shadowMap: 1024, ao: 'Performance', aoHalfRes: true,  bloom: false, smaa: false, windowLights: 2, pointSlots: 3, spotSlots: 2 },
-  medium: { pixelRatio: 1.5, shadowMap: 2048, ao: 'Medium',      aoHalfRes: true,  bloom: true,  smaa: true,  windowLights: 5, pointSlots: 5, spotSlots: 4 },
+  medium: { pixelRatio: 1.5, shadowMap: 2048, ao: 'Medium',      aoHalfRes: true,  bloom: true,  smaa: true,  windowLights: 3, pointSlots: 5, spotSlots: 4 },
   high:   { pixelRatio: 2.0, shadowMap: 4096, ao: 'High',        aoHalfRes: false, bloom: true,  smaa: true,  windowLights: 5, pointSlots: 8, spotSlots: 6 },
 };
 

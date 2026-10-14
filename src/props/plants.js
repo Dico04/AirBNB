@@ -88,7 +88,7 @@ export function oliveTree({ height = 1.6, seed = 7, leafCount = 1700, trunkColor
   wood.castShadow = true; wood.receiveShadow = true;
   group.add(wood);
   // leaves
-  const leafGeo = leafGeometry(0.068, 0.012, { fold: 0.35, curl: 0.15 });
+  const leafGeo = leafGeometry(0.068, 0.012, { fold: 0.35, curl: 0.15, segs: 3 });
   const leafMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.6, side: THREE.DoubleSide });
   const inst = new THREE.InstancedMesh(leafGeo, leafMat, leafCount);
   const m = new THREE.Matrix4(), qd = new THREE.Quaternion(), sc = new THREE.Vector3(), up = V(0, 1, 0);

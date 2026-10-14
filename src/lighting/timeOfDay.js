@@ -157,6 +157,7 @@ export class TimeOfDay {
     // Haze and exposure.
     this.scene.fog.color.copy(s.horizon).multiplyScalar(0.9);
     this.renderer.toneMappingExposure = s.exposure * this.adapt;
+    this.renderer.shadowMap.needsUpdate = true;      // the sun moved
 
     this.lamps.setNight(s.night);
     for (const fn of this.listeners) fn(this);
@@ -181,6 +182,7 @@ export class TimeOfDay {
     this.sky.uniforms.cloudTime.value += dt * LIGHTING.clouds.speed;
     this.sky.mesh.position.copy(cameraPos);
     this.lamps.update(dt, cameraPos);
+    this.windows.tick(dt, cameraPos);
     // Lamp level feeds the interior IBL warmth at night.
     const lampLevel = this.lamps.interiorLevel * 0.26;
     if (Math.abs(lampLevel - this.env.interiorUniforms.lampLevel.value) > 0.01) {

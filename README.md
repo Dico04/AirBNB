@@ -80,6 +80,34 @@ All of it is tunable in `DAYLIGHT_KEYS`, `LIGHTING`, `LAMPS` and `QUALITY` in th
 
 See `compare/terrace-times.jpg` for the terrace at all four presets.
 
+## Performance
+
+| Preset | Render scale (max) | Shadow map | Ambient occlusion | Bloom, SMAA | Window area lights | Lamp light pool |
+|---|---|---|---|---|---|---|
+| Low | 1.0× | 1024 | N8AO Performance, half res | off | 2 | 3 point + 2 spot |
+| Medium (default) | 1.5× | 2048 | N8AO Medium, half res | on | 3 | 5 point + 4 spot |
+| High | 2.0× | 4096 | N8AO High, full res | on | 5 | 8 point + 6 spot |
+
+**What keeps it at 60 fps:**
+- **Automatic resolution.** The frame time is watched continuously. If frames take longer than about 19 ms for more than 0.6 s, the render scale drops by 15%. After 4 s of headroom it climbs back, but never above the preset's scale or the screen's pixel ratio, and it stays just under the level that last failed. The FPS counter (F) shows the current scale. Add `?autores=0` to the URL to turn it off.
+- **Shadow map on demand.** The sun's shadow map is re-rendered only when something that casts into it moves: the sun (time changes), a door, or the third-person figure. Otherwise the last one is reused. That pass used to be more than half of all draw calls.
+- **Merged static geometry.** Walls, furniture, door hardware, lamp fixtures and switch plates are merged per material at load.
+- **Area lights where you are.** A small pool of window area lights is reassigned to the openings of the room you're in, nearest first.
+- **Lamp pool off in daylight.** The lamps share a fixed pool of lights. In daylight, with every lamp off, the pool is hidden so shaders skip the lamp loop entirely. Both shader variants are compiled at load, so nothing stalls at dusk.
+
+**Benchmark.** `node tools/perf.mjs` renders six fixed views per preset at 960×540 and reports draw calls, triangles, shader programs and frame time. The headless browser renders on the CPU (SwiftShader), so its milliseconds are only useful for comparing builds, not as real frame times. The draw calls and triangles are exactly what a GPU gets. Medium preset, before and after the step 7 pass:
+
+| View | Draw calls | Triangles | Frame time (CPU renderer) |
+|---|---|---|---|
+| Living room | 410 → 167 | 690k → 356k | −28% |
+| Kitchen | 431 → 175 | 573k → 243k | −29% |
+| Bedroom | 484 → 190 | 673k → 363k | −30% |
+| Terrace (toward the church) | 341 → 106 | 640k → 307k | −26% |
+| Terrace lounge | 349 → 113 | 641k → 307k | −29% |
+| Living room at night | 410 → 167 | 690k → 356k | −11% |
+
+These are headless numbers; no real MacBook Air was available. On one, Medium should hold 60 fps at or near its full 1.5× scale, and the automatic resolution covers the rest. If a machine still struggles, use Low.
+
 ## Tweaking the apartment
 
 Every dimension, colour and position is in **`src/apartment.config.js`**:
@@ -92,9 +120,11 @@ Every dimension, colour and position is in **`src/apartment.config.js`**:
 ```bash
 npm run compare                        # all reference camera poses → compare/*.jpg + compare/overview.jpg
 npm run compare -- --only 03,05        # a subset
+npm run compare -- --q high --height 720   # at the High preset, larger
 node tools/shot.mjs out.png "eye=3,7,1.6&look=3,9,1.2&fov=60"   # ad-hoc render from any plan position
 node tools/walktest.mjs                # headless checks: walking/collision, time-of-day keys, lights, quality presets
-node tools/uitest.mjs                  # headless checks: E interactions, V, C, P, Esc menu, touch controls
+node tools/uitest.mjs                  # headless checks: E interactions, V, C, P, Esc menu, touch controls, auto resolution
+node tools/perf.mjs                    # draw calls, triangles and frame time per preset and view
 ```
 
 `compare` renders the scene headlessly with Playwright from the pose stored for each photo (`COMPARE_CAMERAS` in the config). It then writes the photo and the render side by side.
@@ -114,9 +144,10 @@ src/util/                 geometry helpers (world-space UVs, rounded boxes) and 
 src/lighting/             sun position, sky dome, environment maps, window lights, lamps, time-of-day controller
 src/props/                furniture & props per room (kitchen, living, corridor, bedroom, bathroom, terrace), plants, shared kit
 src/render/post.js        post-processing chain (N8AO, bloom, ACES, vignette, SMAA)
+src/render/autoRes.js     automatic resolution scaling
 src/player/               first-person controller, height-aware collision, third-person figure
 src/interact/             E interactions (hotspots, doors, switches) and the TV slideshow
 src/tour/                 cinematic tour
 src/ui/                   HUD styles, Esc menu, touch controls, screenshot
-tools/                    compare, ad-hoc shot and walk-test scripts (Playwright)
+tools/                    compare, ad-hoc shot, walk/UI test and benchmark scripts (Playwright)
 ```

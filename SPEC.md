@@ -452,7 +452,7 @@ These will be refined in the first compare pass and stored in config as `compare
 - Plants use **instanced real leaves**.
 
 ### Build order (commit after each step)
-1. SPEC.md → **wait for approval** ← *we are here*
+1. SPEC.md → **wait for approval** (all seven steps are now done, see the build log below)
 2. Shell: walls, floors, ceilings, windows, doors, terrace + movement and collision
 3. Lighting and time-of-day system
 4. Entrance, kitchen, living room, corridor: furniture and props. Bedroom and bathroom go here too.
@@ -572,3 +572,24 @@ Sources consulted for the landmark:
 - **Mobile:** detected by a coarse pointer or touch support. It has a left-thumb joystick, drag-to-look, buttons for E, Run, V and the menu, and a short touch help line.
 - **Environment maps:** both are now captured with reusable cube cameras plus `PMREMGenerator.fromCubemap` into the same output targets, so there are no render-target allocations while the sky animates. Both cubes are 256 px because the generator keeps one ping-pong target.
 - **Tests:** `tools/uitest.mjs` covers lamp, switch, festoon and TV toggles, out-of-reach picking, door and sliding-door blocking, third person, the tour path and its sunset, the PNG export, the menu controls and touch controls. `tools/walktest.mjs` still passes, and `compare/step6-features.jpg` shows the new features.
+
+### Step 7: performance pass and final comparisons
+- **Baseline:** `tools/perf.mjs` measured six views per preset. The sun's shadow pass was more than half the cost: about 230 of 410 draw calls and 310k of 690k triangles in a living-room view.
+- **Shadow map on demand:** it re-renders only when the sun moves, a door animates, or the third-person figure walks or appears.
+- **Window area lights:** now a pool (2 / 3 / 5 by preset) reassigned to the openings of the camera's room, nearest first. Medium went from 5 to 3. Area lights are the most expensive per-pixel lights here, and walls don't stop them, so light from other rooms added nothing visible.
+- **Lamp pool hidden in daylight:** when every lamp is dark, the point/spot pool is hidden, so shaders skip the lamp loop. Both variants are compiled at load (`compileAsync`), so dusk doesn't stall.
+- **More merging:** door hardware, the sliding-door frame, lamp fixtures, switch plates and interaction fixtures are merged per material. Door leaves stay separate because their colliders follow them.
+- **Olive leaves:** use 3 segments instead of 5.
+- **Automatic resolution** (`src/render/autoRes.js`):
+  - It works from real frame intervals and needs no GPU timer queries. It aims at about 19 ms (60 fps with jitter allowance).
+  - **Backing off:** after 0.6 s over target, the pixel ratio drops by 15%, and the level that failed becomes a ceiling.
+  - **Recovering:** after 4 s under target, it climbs by about 11% at a time, up to the preset's ratio. The ceiling is relaxed after 30 s.
+  - **Limits:** the lowest scale is 0.55 (0.75 on High). `?autores=0` turns it off.
+- **Night living room:** the chimney breast's north face read as a black slot at night, so the table lamp's light moved 20 cm into the room.
+- **Results** (medium, before → after):
+  - draw calls: living 410 → 167, kitchen 431 → 175, bedroom 484 → 190, terrace 341 → 106
+  - triangles: about −50%
+  - The CPU renderer's frame time dropped 11–30%. It is fragment-bound, so on a real GPU the draw-call cut matters more than it shows here.
+  - Full table in the README.
+- **Tests:** `tools/uitest.mjs` adds checks that the automatic resolution backs off under load and recovers, and that the lamp pool is hidden in daylight and visible at night.
+- **Final comparisons:** `npm run compare -- --q high --height 720` writes the High-preset side-by-side set to `compare/`, with `compare/overview.jpg` as the contact sheet.

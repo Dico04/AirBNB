@@ -5,6 +5,7 @@
 // Usage:  npm run compare                 (all cameras)
 //         npm run compare -- --only 03,05 (subset)
 //         npm run compare -- --height 720 --time 15
+//         npm run compare -- --q high          (render preset, default medium)
 import { chromium } from 'playwright';
 import { createServer } from 'vite';
 import fs from 'node:fs/promises';
@@ -21,6 +22,7 @@ const arg = (name, dflt) => {
 const only = arg('only', '').split(',').filter(Boolean);
 const H = Number(arg('height', 600));
 const time = arg('time', null);
+const q = arg('q', null);
 const outDir = path.join(root, arg('out', 'compare'));
 await fs.mkdir(outDir, { recursive: true });
 
@@ -54,7 +56,7 @@ for (const cam of cams) {
   const cropW = (cx1 - cx0) * rw, cropH = (cy1 - cy0) * rh;
   const W = Math.round(H * cropW / cropH);
 
-  const url = `${base}?cam=${encodeURIComponent(cam.id)}&w=${W}&h=${H}${time ? `&t=${time}` : ''}`;
+  const url = `${base}?cam=${encodeURIComponent(cam.id)}&w=${W}&h=${H}${time ? `&t=${time}` : ''}${q ? `&q=${q}` : ''}`;
   await page.setViewportSize({ width: Math.max(W, 200), height: H });
   await page.goto(url);
   const ok = await page.waitForFunction(() => window.__ready || window.__error, null, { timeout: 180000 }).then(() => true, () => false);

@@ -112,6 +112,8 @@ export function buildCity() {
   excl.push([chx - 22, chy - 8, chx + 22, chy + 56]);
 
   // ---- dome landmark
+  const landmarks = new THREE.Group();
+  group.add(landmarks);
   {
     const D = CITY.dome, [cx, cy] = D.center, [w, d] = D.base;
     addBlock(cx - w / 2, cy - d / 2, cx + w / 2, cy + d / 2, D.top, 'render-cream', { clutterChance: 0 });
@@ -123,7 +125,7 @@ export function buildCity() {
     drum.position.set(cx, STREET + D.top + 1.5, cy);
     const lantern = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 4, 8), domeMat);
     lantern.position.set(cx, STREET + D.top + 3 + D.r + 1.6, cy);
-    group.add(dome, drum, lantern);
+    landmarks.add(dome, drum, lantern);
   }
 
   // ---- tower crane (bedroom view)
@@ -138,7 +140,7 @@ export function buildCity() {
     jib.rotation.y = -a;
     const cab = new THREE.Mesh(new THREE.BoxGeometry(3, 2.5, 2.5), cm);
     cab.position.set(cx, STREET + C.mast + 2.6, cy);
-    group.add(mast, jib, cab);
+    landmarks.add(mast, jib, cab);
   }
 
   const inExcl = (x0, y0, x1, y1) => excl.some(([a, b, c, d]) => x1 > a && x0 < c && y1 > b && y0 < d);
@@ -165,6 +167,8 @@ export function buildCity() {
       }
     }
   }
+
+  mergeStatic(landmarks, { name: 'landmarks-merged' });
 
   // ---- procedural skyline (jittered grid)
   const R = CITY.radius, cell = CITY.cell;
@@ -223,7 +227,9 @@ export function buildCity() {
   group.add(boulevardTrees());
 
   // ---- outside the bedroom window: brick parapet with concrete coping and a galvanised roof ladder
-  group.add(bedroomView());
+  const bv = bedroomView();
+  group.add(bv);
+  mergeStatic(bv, { name: 'bedroom-view-merged' });
 
   const glowMats = new Set();
   group.traverse((o) => { if (o.isMesh && o.material.userData.glow !== undefined) glowMats.add(o.material); });

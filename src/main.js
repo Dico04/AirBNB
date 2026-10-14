@@ -80,6 +80,17 @@ const fmtTime = (h) => `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.
 
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
 
+// Compile every material for both lamp-pool states (lit / all dark) so switching at dusk never stalls.
+async function precompileLightVariants(lamps) {
+  if (!renderer.compileAsync) return;
+  const was = lamps.poolVisible;
+  for (const v of [true, false]) {
+    lamps.setPoolVisible(v);
+    try { await renderer.compileAsync(scene, camera); } catch { /* compile on first use instead */ }
+  }
+  lamps.setPoolVisible(was);
+}
+
 async function init() {
   await nextFrame();
   const collision = new CollisionWorld();
@@ -104,6 +115,7 @@ async function init() {
 
   const interactions = new Interactions({ scene, camera, lamps: tod.lamps, doors: openings.doors, occluders: [shell], promptEl });
   tod.env.registerExteriorMaterials(scene);
+  if (!isShot) await precompileLightVariants(tod.lamps);
 
   const [w, h] = viewSize();
   post = createPost(renderer, scene, camera, quality, { width: w, height: h });

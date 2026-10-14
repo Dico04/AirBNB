@@ -188,7 +188,6 @@ function diningTable(collision, lamps) {
     bowl.add(at(fl, Math.cos(a) * 0.05, 0.122, Math.sin(a) * 0.05));
   }
   lamps?.addEmissive('festoon-s2', flameMat, 6);
-  bowl.traverse((o) => { if (o.isMesh) o.userData.noMerge = true; });
   g.add(at(bowl, B.pos[0], top, B.pos[1]));
   // small amber glass jar candle
   const J = T.jarCandle;

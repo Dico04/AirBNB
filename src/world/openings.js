@@ -1,5 +1,6 @@
 // Windows, doors, sliding terrace door and the oak step platform.
 import * as THREE from 'three';
+import { mergeStatic } from '../util/merge.js';
 import { WALLS, WINDOWS, DOORS, SLIDING_DOOR, PLATFORM } from '../apartment.config.js';
 import { roundedBox, planRoundedBox, mesh } from '../util/geometry.js';
 import { getMaterials } from './materials.js';
@@ -165,6 +166,8 @@ function hingedLeaf(spec, W, t, originAt, M, collision, group) {
     hg.position.set(0, hy, 0.004);
     leafGroup.add(hg);
   }
+  leaf.userData.noMerge = true;
+  mergeStatic(leafGroup, { name: `${spec.id}-leaf-merged` });
   pivot.add(leafGroup);
   const setAngle = (deg) => { leafGroup.rotation.y = -dir * THREE.MathUtils.degToRad(deg); };
   setAngle(spec.openDeg);
@@ -251,6 +254,8 @@ function buildSlidingDoor(M, collision) {
   sliding.position.x = openX;
   group.add(sliding);
   // Colliders for the leaves (thin full-height slabs).
+  mergeStatic(fixed, { name: 'slide-fixed-merged' });
+  mergeStatic(sliding, { name: 'slide-sliding-merged' });
   collision.addDynamicBox(fixed, [leafW, leafH, 0.07], [leafW / 2, leafH / 2, 0]);
   collision.addDynamicBox(sliding, [leafW, leafH, 0.07], [leafW / 2, leafH / 2, 0]);
   const setOpen = (fraction) => { sliding.position.x = closedX + (openX - closedX) * (fraction / S.openFraction); };

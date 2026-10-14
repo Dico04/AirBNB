@@ -109,7 +109,6 @@ export function buildBedroom(collision, lamps) {
   const shadeMat = new THREE.MeshStandardMaterial({ color: '#f3f0ea', roughness: 0.95, side: THREE.DoubleSide });
   lamp.add(at(mesh(pleatedShade(0.06, 0.1, 0.13), shadeMat), 0, 0.33, 0));
   lamps?.addEmissive('bedside-lamp', shadeMat, 0.9);
-  lamp.traverse((o) => { if (o.isMesh) o.userData.noMerge = true; });
   lamp.position.set(N.pos[0] + 0.04, nh, N.pos[1] + 0.03);
   g.add(lamp);
   g.add(at(mesh(lathe([[0.001, 0], [0.045, 0.002], [0.05, 0.012]], 24), mats.metal('#c9a44c', 0.25)), N.pos[0] - 0.1, nh, N.pos[1] - 0.06));
@@ -128,7 +127,6 @@ export function buildBedroom(collision, lamps) {
   const glowMat = new THREE.MeshStandardMaterial({ color: '#fff3dd', roughness: 0.9, side: THREE.DoubleSide });
   sc.add(mesh(new THREE.CylinderGeometry(R * 0.7, R * 0.7, H * 0.8, 16, 1, true, -Math.PI / 2, Math.PI), glowMat, { cast: false }));
   lamps?.addEmissive('bed-sconce', glowMat, 1.4);
-  sc.traverse((o) => { if (o.isMesh) o.userData.noMerge = true; });
   sc.position.set(B.sconce.x, B.sconce.h, y1);
   g.add(sc);
 

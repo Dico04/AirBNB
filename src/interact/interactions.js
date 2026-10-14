@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { FURNITURE, DIMS, DOORS, SLIDING_DOOR } from '../apartment.config.js';
 import { rbox, mats } from '../props/kit.js';
 import { TvScreen } from './tv.js';
+import { mergeStatic } from '../util/merge.js';
 
 const REACH = 2.4;
 const box = (x0, h0, y0, x1, h1, y1) => new THREE.Box3(new THREE.Vector3(x0, h0, y0), new THREE.Vector3(x1, h1, y1));
@@ -47,6 +48,7 @@ export class Interactions {
     this.fixtures.name = 'switches';
     scene.add(this.fixtures);
     this.setup();
+    mergeStatic(this.fixtures, { name: 'switches-merged' });
   }
 
   add(item) { this.items.push(item); return item; }

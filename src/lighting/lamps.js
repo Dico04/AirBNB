@@ -3,6 +3,7 @@
 // the most relevant lit lamps near the viewer, so the shader light count never changes (no
 // recompiles, stable frame time) while the whole flat can still glow at night.
 import * as THREE from 'three';
+import { mergeStatic } from '../util/merge.js';
 import { LAMPS, LIGHTING, ROOMS, DIMS } from '../apartment.config.js';
 import { mesh } from '../util/geometry.js';
 
@@ -55,8 +56,10 @@ export class Lamps {
       return { light: l, lamp: null };
     });
     this._timer = 0;
+    this.poolVisible = true;
     this.group = this.buildFixtures();
     scene.add(this.group);
+    mergeStatic(this.group, { name: 'light-fixtures-merged' });
   }
 
   // Furniture lamps call this to make their shade / bulb glow with the lamp.
@@ -184,6 +187,15 @@ export class Lamps {
       if (!l) { slot.light.intensity = 0; continue; }
       slot.light.intensity = l.spec.intensity * l.level;
     }
+    // In daylight with every lamp dark the whole pool is hidden, so shaders skip the point/spot loop
+    // (both shader variants are compiled up front, see precompileLightVariants in main.js).
+    const anyLit = this.lamps.some((l) => l.level > 0.001);
+    if (anyLit !== this.poolVisible) this.setPoolVisible(anyLit);
+  }
+
+  setPoolVisible(v) {
+    this.poolVisible = v;
+    for (const s of [...this.points, ...this.spots]) s.light.visible = v;
   }
 
   assign(slots, candidates) {

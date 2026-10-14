@@ -157,6 +157,27 @@ r = await page.evaluate(() => {
   return out;
 });
 report(r.hours === 9.25 && r.fov === 61 && r.sens === 1.5 && r.mode === 'on' && r.label === '09:15' && r.stored.fov === 61, 'menu: time slider, FOV, sensitivity, lights, saved settings', r);
+// ---- performance helpers: auto resolution + daylight lamp pool
+r = await page.evaluate(() => {
+  const s = window.__scene, a = s.autoRes;
+  const start = a.ratio;
+  a.cooldown = 0;
+  for (let i = 0; i < 80; i++) a.update(0.05);                  // 20 fps: should back off
+  const low = a.ratio, px = s.renderer.getPixelRatio();
+  a.cooldown = 0; a.ceilingAge = 31;
+  for (let i = 0; i < 60 * 12; i++) a.update(1 / 60);           // steady 60 fps: climbs back
+  return { start, low, px, recovered: a.ratio };
+});
+report(r.low < r.start && Math.abs(r.px - r.low) < 0.01 && r.recovered > r.low, 'auto resolution backs off on slow frames and recovers', r);
+r = await page.evaluate(() => {
+  const s = window.__scene, L = s.tod.lamps;
+  L.clearManual(); L.setMode('auto');
+  s.tod.setTime(14); for (let i = 0; i < 90; i++) L.update(1 / 30, s.camera.position);
+  const day = L.poolVisible;
+  s.tod.setTime(22.5); for (let i = 0; i < 90; i++) L.update(1 / 30, s.camera.position);
+  return { day, night: L.poolVisible };
+});
+report(r.day === false && r.night === true, 'lamp light pool hidden in daylight, shown at night', r);
 await page.close();
 
 // ---- mobile

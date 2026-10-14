@@ -333,7 +333,7 @@ export const LIGHTING = {
 // the furniture; the light positions live here. pos = plan [x, y, h]. intensity in candela.
 // type 'point' | 'spot' (spots aim straight down). auto: switches on by itself after dusk.
 export const LAMPS = [
-  { id: 'living-lamp',   room: 'living',   type: 'point', pos: [5.80, 8.62, 1.02], kelvin: 3000, intensity: 10, auto: true },
+  { id: 'living-lamp',   room: 'living',   type: 'point', pos: [5.80, 8.42, 1.05], kelvin: 3000, intensity: 10, auto: true },
   { id: 'desk-lamp',     room: 'corridor', type: 'point', pos: [3.66, 0.34, 0.98], kelvin: 3000, intensity: 7, auto: true },
   { id: 'bedside-lamp',  room: 'bedroom',  type: 'point', pos: [0.62, 2.62, 0.80], kelvin: 3000, intensity: 7, auto: true },
   { id: 'bed-sconce',    room: 'bedroom',  type: 'point', pos: [2.05, 2.62, 1.80], kelvin: 3000, intensity: 7, auto: true },

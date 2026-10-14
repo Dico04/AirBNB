@@ -126,7 +126,6 @@ export function buildCorridor(collision, lamps) {
   const shadeMat = new THREE.MeshStandardMaterial({ color: C.lamp.shade, roughness: 0.95, side: THREE.DoubleSide, map: mats.linen('#ffffff').map });
   lamp.add(at(mesh(new THREE.CylinderGeometry(0.068, 0.085, 0.17, 32, 1, true), shadeMat), 0, 0.24, 0));
   lamps?.addEmissive('desk-lamp', shadeMat, 0.8);
-  lamp.traverse((o) => { if (o.isMesh) o.userData.noMerge = true; });
   lamp.position.set(C.lamp.pos[0], D.top, C.lamp.pos[1]);
   g.add(lamp);
   // black-framed print with handmade paper, leaning on the end wall

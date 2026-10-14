@@ -251,7 +251,6 @@ function sideboard(collision, lamps) {
   lamps?.addEmissive('living-lamp', shadeMat, 0.9);
   lamps?.addEmissive('living-lamp', bulb.material, 6);
   lamp.position.set(L.lamp.pos[0], h1, L.lamp.pos[1]);
-  lamp.traverse((o) => { if (o.isMesh) o.userData.noMerge = true; });
   g.add(lamp);
   g.add(at(mesh(lathe([[0.001, 0], [0.04, 0.002], [0.05, 0.015]], 20), mats.ceramic('dish2', '#e2d6cb')), L.lamp.pos[0] + 0.12, h1, L.lamp.pos[1] - 0.12));
   return g;

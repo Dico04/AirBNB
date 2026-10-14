@@ -394,13 +394,14 @@ export const PLAYER = {
 // Camera poses that reproduce each reference photo (for tools/compare.mjs).
 // eye in plan coords [x, y, h]; either `target` [x, y, h] or `yaw`/`pitch` in degrees
 // (yaw = plan bearing clockwise from plan-north, pitch positive = up). fov = vertical FOV.
-// overrides: per-photo staging (e.g. the olive tree stood by the east wall in photo 03).
+// overrides: per-photo staging (e.g. the olive tree stood by the east wall in photo 03, the bedroom
+// window was open for photo 01R).
 // time = local hour to render at (default SITE.defaultTime); the terrace photos were shot
 // around midday. crop = fraction of the reference image [x0, y0, x1, y1]. Poses marked `solved` were fitted
 // to measured photo points; the others are hand-placed and get refined as furniture arrives.
 export const COMPARE_CAMERAS = [
   { id: '01L', ref: '01.jpg', crop: [0, 0, 0.515, 1], eye: [2.45, 0.35, 1.45], target: [0.75, 2.90, 0.95], fov: 60 },
-  { id: '01R', ref: '01.jpg', crop: [0.515, 0, 1, 1], eye: [0.62, 2.22, 1.32], target: [-3.0, 2.12, 0.85], fov: 58, outdoor: true },
+  { id: '01R', ref: '01.jpg', crop: [0.515, 0, 1, 1], eye: [0.38, 2.12, 1.40], target: [-3.0, 1.95, 1.15], fov: 64, outdoor: true, overrides: { openWindow: 'W-bed' } },
   { id: '02L', ref: '02.jpg', crop: [0, 0, 0.467, 1], eye: [2.60, 14.00, 1.85], target: [-19.0, 78.0, 2.0], fov: 40, time: 13.5 },
   { id: '02R', ref: '02.jpg', crop: [0.467, 0, 1, 1], eye: [3.90, 11.10, 1.75], target: [0.60, 14.10, 1.10], fov: 58, time: 13.5 },
   { id: '03',  ref: '03.jpg', crop: [0, 0, 1, 1], eye: [4.02, 5.05, 1.45], yaw: 161.6, pitch: -11, fov: 50, solved: true, overrides: { oliveSpot: 'eastWall' } },

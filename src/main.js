@@ -97,11 +97,13 @@ async function init() {
   const shell = buildShell(collision);
   const terrace = buildTerrace(collision);
   const openings = buildOpenings(collision);
+  const staged = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId)?.overrides : null;
+  // A photo taken through an open window: that window (sash, glass, frame) is left out of the shot.
+  if (staged?.openWindow) openings.group.getObjectByName(staged.openWindow)?.removeFromParent();
   scene.add(shell, terrace, openings.group);
   for (const g of [shell, terrace, openings.group]) mergeStatic(g, { name: `${g.name}-merged` });
 
   const tod = new TimeOfDay({ renderer, scene, quality });
-  const staged = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId)?.overrides : null;
   if (staged?.oliveSpot) FURNITURE.living.oliveTree.spot = staged.oliveSpot;
   if (params.has('olive')) FURNITURE.living.oliveTree.spot = params.get('olive');
   scene.add(buildFurniture(collision, tod.lamps));

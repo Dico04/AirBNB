@@ -247,7 +247,7 @@ export function driedFlowers({ seed = 31, stems = 7, height = 0.32 } = {}) {
     stemG.push(new THREE.TubeGeometry(curve, 6, 0.0018, 4, false).toNonIndexed());
     // a small umbel of tiny heads
     for (let k = 0; k < 10; k++) {
-      const h = headGeo.clone().toNonIndexed();
+      const h = headGeo.clone();
       const s = 0.6 + rand() * 0.8;
       h.scale(s, s * 0.7, s);
       h.translate(top.x + (rand() - 0.5) * 0.05, top.y + (rand() - 0.5) * 0.02, top.z + (rand() - 0.5) * 0.05);

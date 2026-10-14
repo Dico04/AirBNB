@@ -257,9 +257,9 @@ function boulevardTrees() {
   const crownParts = [];
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2;
-    crownParts.push(new THREE.IcosahedronGeometry(1, 0).scale(0.55, 0.5, 0.55).translate(Math.cos(a) * 0.4, 0.05 + (i % 2) * 0.14, Math.sin(a) * 0.4).toNonIndexed());
+    crownParts.push(new THREE.IcosahedronGeometry(1, 0).scale(0.55, 0.5, 0.55).translate(Math.cos(a) * 0.4, 0.05 + (i % 2) * 0.14, Math.sin(a) * 0.4));
   }
-  crownParts.push(new THREE.IcosahedronGeometry(1, 0).scale(0.6, 0.55, 0.6).translate(0, 0.38, 0).toNonIndexed());
+  crownParts.push(new THREE.IcosahedronGeometry(1, 0).scale(0.6, 0.55, 0.6).translate(0, 0.38, 0));
   const crownGeo = mergeGeometries(crownParts);
   const trunkMat = ext(new THREE.MeshStandardMaterial({ color: '#6f6556', roughness: 0.9 }), 0.5);
   const crownMat = ext(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, flatShading: true }), 0.5);

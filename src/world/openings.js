@@ -94,10 +94,11 @@ function buildWindow(spec, M) {
   // Handle on the opening side of the sash.
   const hx = spec.handle === 'left' ? sx0 + s / 2 : sx1 - s / 2;
   group.add(windowHandle(hx, (sy0 + sy1) / 2, sz1, M));
-  // Inner sill board (overhangs the wall face and the reveal a little).
+  // Inner sill board (overhangs the wall face and the reveal a little). Its top sits 4 mm above the
+  // opening's bottom so it doesn't z-fight with the wall below; the overlap hides in the frame.
   const sillMat = spec.innerSill === 'bluestone' ? M.bluestone : M.whitePaint;
   const sillT = spec.innerSill === 'bluestone' ? 0.03 : 0.022;
-  group.add(lbox(-0.03, W + 0.03, b - sillT, b, z1 - 0.005, t + 0.03, sillMat, 0.003));
+  group.add(lbox(-0.03, W + 0.03, b - sillT + 0.004, b + 0.004, z1 - 0.005, t + 0.03, sillMat, 0.003));
   // Exterior sill (aluminium grey) with a drip edge.
   group.add(lbox(-0.02, W + 0.02, b - 0.035, b - 0.005, -0.045, z0, M.coping, 0.003));
   // Roller blind (W-living): black cassette + a hand of fabric + beaded chain.

@@ -593,3 +593,7 @@ Sources consulted for the landmark:
   - Full table in the README.
 - **Tests:** `tools/uitest.mjs` adds checks that the automatic resolution backs off under load and recovers, and that the lamp pool is hidden in daylight and visible at night.
 - **Final comparisons:** `npm run compare -- --q high --height 720` writes the High-preset side-by-side set to `compare/`, with `compare/overview.jpg` as the contact sheet.
+- **Fixes from the final comparison:**
+  - **Window sills:** the inner sill boards z-fought with the wall below the opening (both tops at the sill height), which showed as a jagged white patch on the bedroom sill. The boards now sit 4 mm higher.
+  - **Camera 01R:** moved to the open window with the window left out of the shot (`overrides.openWindow`), as in the photo. The coping and the red-brick parapet now fill the lower half of the frame, and the view is no longer through glass.
+  - **Console warnings:** removed redundant `toNonIndexed()` calls on geometry that was already non-indexed (street-tree crowns, dried-flower heads).

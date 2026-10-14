@@ -91,7 +91,7 @@ See `compare/terrace-times.jpg` for the terrace at all four presets.
 | High | 2.0× | 4096 | N8AO High, full res | on | 5 | 8 point + 6 spot |
 
 **What keeps it at 60 fps:**
-- **Automatic resolution.** The frame time is watched continuously. If frames take longer than about 19 ms for more than 0.6 s, the render scale drops by 15%. After 4 s of headroom it climbs back, but never above the preset's scale or the screen's pixel ratio, and it stays just under the level that last failed. The FPS counter (F) shows the current scale. Add `?autores=0` to the URL to turn it off.
+- **Automatic resolution.** The frame time is watched continuously. If frames take longer than about 19 ms for more than 0.6 s, the render scale drops by 15%. After 4 s of headroom it climbs back, but never above the preset's scale or the screen's pixel ratio, and it stays just under the level that last failed. Each step down is checked: if frames don't get faster, the frame rate is capped by something else, and full sharpness comes back. An iPhone in Low Power Mode is an example: it holds Safari at 30 fps. The FPS counter (F) shows the current scale. Add `?autores=0` to the URL to turn it off.
 - **Shadow map on demand.** The sun's shadow map is re-rendered only when something that casts into it moves: the sun (time changes), a door, or the third-person figure. Otherwise the last one is reused. That pass used to be more than half of all draw calls.
 - **Merged static geometry.** Walls, furniture, door hardware, lamp fixtures and switch plates are merged per material at load.
 - **Area lights where you are.** A small pool of window area lights is reassigned to the openings of the room you're in, nearest first.

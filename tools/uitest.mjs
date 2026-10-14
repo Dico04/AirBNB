@@ -162,13 +162,25 @@ r = await page.evaluate(() => {
   const s = window.__scene, a = s.autoRes;
   const start = a.ratio;
   a.cooldown = 0;
-  for (let i = 0; i < 80; i++) a.update(0.05);                  // 20 fps: should back off
+  // GPU-bound: 50 ms frames at full size, cost scales with the pixel count. Should step down.
+  for (let i = 0; i < 400; i++) a.update(0.05 * (a.ratio / start) ** 2);
   const low = a.ratio, px = s.renderer.getPixelRatio();
   a.cooldown = 0; a.ceilingAge = 31;
   for (let i = 0; i < 60 * 12; i++) a.update(1 / 60);           // steady 60 fps: climbs back
-  return { start, low, px, recovered: a.ratio };
+  return { start, low, px, recovered: a.ratio, target: a.target };
 });
-report(r.low < r.start && Math.abs(r.px - r.low) < 0.01 && r.recovered > r.low, 'auto resolution backs off on slow frames and recovers', r);
+report(r.low < r.start && Math.abs(r.px - r.low) < 0.01 && r.recovered > r.low && r.target === 19, 'auto resolution backs off on slow frames and recovers', r);
+r = await page.evaluate(() => {
+  const a = window.__scene.autoRes;
+  a.set(a.max); a.cooldown = 0; a.ema = 16.7; a.trial = null;
+  // Frame rate capped at 30 fps whatever the size (iOS Low Power Mode): must end at full sharpness.
+  let lowest = a.ratio;
+  for (let i = 0; i < 30 * 20; i++) { a.update(1 / 30); lowest = Math.min(lowest, a.ratio); }
+  const capped = { ratio: a.ratio, target: a.target };
+  for (let i = 0; i < 60 * 4; i++) a.update(1 / 60);            // cap lifted: back to aiming for 60
+  return { max: a.max, lowest, capped, liftedTarget: a.target };
+});
+report(r.capped.ratio === r.max && r.capped.target > 30 && r.liftedTarget === 19, 'auto resolution keeps full sharpness when the frame rate is capped (Low Power Mode)', r);
 r = await page.evaluate(() => {
   const s = window.__scene, L = s.tod.lamps;
   L.clearManual(); L.setMode('auto');

@@ -48,6 +48,11 @@ export class EnvironmentLighting {
       new THREE.ShaderMaterial({ uniforms: this.interiorUniforms, vertexShader: domeVert, fragmentShader: interiorFrag, side: THREE.BackSide, depthWrite: false }),
     ));
 
+    // Reused capture targets: cube cameras render each scene, then the PMREM is rebuilt into the same
+    // output target (no per-refresh allocations while the time of day animates).
+    const cubeOpts = { type: THREE.HalfFloatType, generateMipmaps: false };
+    this.skyCube = new THREE.CubeCamera(0.1, 100, new THREE.WebGLCubeRenderTarget(256, cubeOpts));
+    this.interiorCube = new THREE.CubeCamera(0.1, 100, new THREE.WebGLCubeRenderTarget(256, cubeOpts));   // same size: the PMREM generator keeps one ping-pong target
     this.exteriorRT = null;
     this.interiorRT = null;
     this.exteriorMaterials = new Set();
@@ -98,12 +103,12 @@ export class EnvironmentLighting {
   }
 
   update() {
-    const old = [this.exteriorRT, this.interiorRT];
-    this.exteriorRT = this.pmrem.fromScene(this.skyScene, 0, 0.1, 100);
-    this.interiorRT = this.pmrem.fromScene(this.interiorScene, 0.02, 0.1, 100);
+    this.skyCube.update(this.renderer, this.skyScene);
+    this.interiorCube.update(this.renderer, this.interiorScene);
+    this.exteriorRT = this.pmrem.fromCubemap(this.skyCube.renderTarget.texture, this.exteriorRT);
+    this.interiorRT = this.pmrem.fromCubemap(this.interiorCube.renderTarget.texture, this.interiorRT);
     this.scene.environment = this.interiorRT.texture;
     this.scene.environmentIntensity = this.interiorIntensity ?? 1;
     this.applyExterior();
-    for (const rt of old) if (rt) rt.dispose();
   }
 }

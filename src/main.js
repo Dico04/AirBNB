@@ -11,6 +11,12 @@ import { createPost } from './render/post.js';
 import { buildFurniture } from './props/index.js';
 import { buildCity } from './world/city.js';
 import { mergeStatic } from './util/merge.js';
+import { Interactions } from './interact/interactions.js';
+import { Avatar } from './player/avatar.js';
+import { Tour } from './tour/tour.js';
+import { takeScreenshot } from './ui/screenshot.js';
+import { Menu, loadSettings, takeResumeState } from './ui/menu.js';
+import { TouchControls, isTouchDevice } from './ui/touch.js';
 
 const params = new URLSearchParams(location.search);
 const compareId = params.get('cam');
@@ -26,6 +32,9 @@ const helpEl = document.getElementById('help');
 const fpsEl = document.getElementById('fps');
 const toastEl = document.getElementById('toast');
 const crosshair = document.getElementById('crosshair');
+const promptEl = document.getElementById('prompt');
+const menuEl = document.getElementById('menu');
+const captionEl = document.getElementById('caption');
 if (isShot) document.body.classList.add('shot');
 
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: isShot, stencil: false });
@@ -89,13 +98,15 @@ async function init() {
   const shotCam = compareId ? COMPARE_CAMERAS.find((k) => k.id === compareId) : null;
   if (params.has('t')) tod.setTime(Number(params.get('t')));
   else if (shotCam?.time !== undefined) tod.setTime(shotCam.time);
+
+  const interactions = new Interactions({ scene, camera, lamps: tod.lamps, doors: openings.doors, occluders: [shell], promptEl });
   tod.env.registerExteriorMaterials(scene);
 
   const [w, h] = viewSize();
   post = createPost(renderer, scene, camera, quality, { width: w, height: h });
   resize();
 
-  window.__scene = { scene, camera, renderer, collision, tod, post, city, doors: openings.doors, quality: qualityName };
+  window.__scene = { scene, camera, renderer, collision, tod, post, city, interactions, doors: openings.doors, quality: qualityName };
 
   if (isShot) {
     const num = (k) => params.get(k).split(',').map(Number);
@@ -120,28 +131,132 @@ async function init() {
 
   const controls = new FirstPersonController(camera, renderer.domElement, collision);
   window.__scene.controls = controls;
-  statusEl.textContent = 'Click anywhere to start';
-  startEl.addEventListener('click', () => controls.lock());
-  renderer.domElement.addEventListener('lockchange', (e) => {
-    startEl.classList.toggle('hidden', e.detail);
-    crosshair.classList.toggle('hidden', !e.detail);
+  const settings = loadSettings();
+  if (settings.sens) controls.sensitivity = PLAYER.mouseSensitivity * settings.sens;
+  if (settings.fov) { camera.fov = settings.fov; camera.updateProjectionMatrix(); }
+  let view = settings.view === 'third' ? 'third' : 'first';
+  const resumeState = takeResumeState();
+  if (resumeState) {
+    controls.setPose(resumeState.x, resumeState.z, resumeState.yaw, resumeState.pitch);
+    tod.setTime(resumeState.hours);
+    if (resumeState.view) view = resumeState.view;
+  }
+  const avatar = new Avatar(scene);
+  const boomOccluders = [shell, terrace, openings.group];
+  const touch = isTouchDevice();
+  let started = false;
+
+  const setView = (v) => {
+    view = v;
+    if (view === 'first') avatar.hide();
+    toast(view === 'third' ? 'Third person' : 'First person');
+  };
+  const toggleView = () => setView(view === 'third' ? 'first' : 'third');
+
+  const tour = new Tour({
+    camera, tod, interactions, captionEl,
+    onEnd: () => { controls.enabled = !menu.open; toast('Tour finished · you can walk again'); },
   });
+  const toggleTour = () => {
+    if (tour.active) { tour.stop(); return; }
+    menu.hide();
+    if (!touch && !controls.locked) controls.lock();
+    controls.enabled = false;
+    avatar.hide();
+    tour.start();
+  };
+  const screenshot = () => {
+    const r = takeScreenshot({ renderer, post, camera, width: window.innerWidth, height: window.innerHeight, scale: 2 });
+    toast(`Screenshot saved · ${r.width}×${r.height}`);
+  };
+
+  const menu = new Menu({
+    root: menuEl, tod, controls, camera, quality: qualityName, settings,
+    actions: {
+      resume: () => resume(),
+      tour: () => toggleTour(),
+      screenshot: () => { menu.hide(); requestAnimationFrame(() => { screenshot(); openMenu(); }); },
+      setView: (v) => setView(v),
+      getView: () => view,
+    },
+  });
+  window.__scene.menu = menu;
+  window.__scene.tour = tour;
+  window.__scene.avatar = avatar;
+  window.__scene.setView = setView;
+
+  function openMenu() {
+    if (!started) return;
+    tour.stop();
+    controls.enabled = false;
+    controls.keys.clear();
+    crosshair.classList.add('hidden');
+    menu.show();
+  }
+  function resume() {
+    menu.hide();
+    if (touch) { controls.enabled = true; crosshair.classList.remove('hidden'); }
+    else controls.lock();
+  }
+
+  statusEl.textContent = touch ? 'Tap anywhere to start' : 'Click anywhere to start';
+  startEl.addEventListener('click', () => {
+    started = true;
+    if (touch) { startEl.classList.add('hidden'); crosshair.classList.remove('hidden'); controls.enabled = true; }
+    else controls.lock();
+  });
+  renderer.domElement.addEventListener('lockchange', (e) => {
+    if (e.detail) {
+      started = true;
+      startEl.classList.add('hidden');
+      menu.hide();
+      crosshair.classList.remove('hidden');
+      if (!tour.active) controls.enabled = true;
+    } else if (!touch) {
+      openMenu();
+    }
+  });
+  const touchCtl = touch ? new TouchControls({
+    root: document.getElementById('touch'), canvas: renderer.domElement, controls,
+    actions: { use: () => interactions.trigger(), view: toggleView, menu: () => (menu.open ? resume() : openMenu()) },
+  }) : null;
+
   window.addEventListener('keydown', (e) => {
+    if (menu.open || e.repeat) return;
     if (e.code === 'KeyH') helpEl.classList.toggle('hidden');
     if (e.code === 'KeyF') fpsEl.classList.toggle('hidden');
+    if (e.code === 'KeyP') screenshot();
+    if (e.code === 'KeyC') toggleTour();
+    if (tour.active) return;
     const preset = TIME_PRESETS.findIndex((p) => p.key === e.code);
     if (preset >= 0) {
       const p = tod.goToPreset(preset);
       toast(`${p.name} · ${fmtTime(p.hours)}`);
     }
     if (e.code === 'KeyL') toast(tod.lamps.toggleAll() === 'on' ? 'All lights on' : 'All lights off');
+    if (e.code === 'KeyE') interactions.trigger();
+    if (e.code === 'KeyV') toggleView();
   });
 
   const clock = new THREE.Clock();
   let frames = 0, acc = 0;
+  const eye = new THREE.Vector3();
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.1);
-    controls.update(dt);
+    if (tour.active) {
+      tour.update(dt);
+      interactions.originOverride = null;
+    } else {
+      controls.update(dt);
+      if (view === 'third') {
+        avatar.update(dt, controls, camera, boomOccluders, controls.moving, controls.running);
+        interactions.originOverride = eye.set(controls.x, controls.feet + PLAYER.eyeHeight, controls.z);
+      } else {
+        interactions.originOverride = null;
+      }
+    }
+    interactions.update(dt, started && !menu.open && !tour.active);
+    touchCtl?.setUseAvailable(Boolean(interactions.hover));
     tod.update(dt, camera.position);
     renderer.info.reset();
     post.render(dt);

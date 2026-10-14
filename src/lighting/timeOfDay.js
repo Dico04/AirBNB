@@ -91,6 +91,7 @@ export class TimeOfDay {
     if (delta < -12) delta += 24;
     this.anim = { from: this.hours, delta, t: 0, dur: Math.max(0.01, seconds) };
     this.lamps.setMode('auto');
+    this.lamps.clearManual();
   }
 
   goToPreset(index) {

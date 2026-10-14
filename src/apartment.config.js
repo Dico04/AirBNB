@@ -352,6 +352,26 @@ export const LAMPS = [
   { id: 'festoon-e2', room: 'terrace', type: 'point', pos: [2.10, 11.40, 1.95], kelvin: 2600, intensity: 1.1, auto: true, group: 'festoon' },
 ];
 
+// Cinematic tour (C). Keys: time (s), eye & look [x, y, h] in plan metres, vertical fov; optional caption
+// and a time-of-day change (`goTo` hours over `goToSeconds`).
+export const TOUR = {
+  startHours: 17.0,
+  holdSeconds: 3,
+  keys: [
+    { t: 0,  eye: [1.75, 4.60, 1.62], look: [4.80, 3.40, 1.25], fov: 68, caption: 'Entrance' },
+    { t: 5,  eye: [3.30, 4.85, 1.62], look: [6.00, 2.90, 1.10], fov: 66 },
+    { t: 10, eye: [5.35, 4.85, 1.60], look: [6.00, 2.30, 1.00], fov: 64, caption: 'Kitchen' },
+    { t: 15, eye: [5.85, 3.55, 1.55], look: [5.40, 2.10, 0.95], fov: 62 },
+    { t: 20, eye: [5.25, 5.10, 1.60], look: [3.80, 8.30, 0.90], fov: 66, caption: 'Living room' },
+    { t: 26, eye: [5.35, 7.35, 1.60], look: [2.60, 8.40, 1.00], fov: 68 },
+    { t: 31, eye: [3.55, 7.95, 1.70], look: [3.40, 11.0, 1.40], fov: 68, caption: '' },
+    { t: 35, eye: [3.45, 9.25, 1.85], look: [4.60, 12.6, 1.00], fov: 70, caption: 'Roof terrace', goTo: 20.6, goToSeconds: 16 },
+    { t: 41, eye: [3.75, 11.05, 1.85], look: [6.20, 12.9, 0.90], fov: 66 },
+    { t: 47, eye: [3.95, 12.25, 1.85], look: [-16.0, 76.0, 9.0], fov: 60, caption: 'Theater Elckerlyc at sunset' },
+    { t: 60, eye: [3.35, 13.75, 1.80], look: [-19.0, 76.0, 13.0], fov: 38 },
+  ],
+};
+
 // Render quality presets (?q=low|medium|high; menu in step 6).
 export const QUALITY = {
   low:    { pixelRatio: 1.0, shadowMap: 1024, ao: 'Performance', aoHalfRes: true,  bloom: false, smaa: false, windowLights: 2, pointSlots: 3, spotSlots: 2 },

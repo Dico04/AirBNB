@@ -13,7 +13,7 @@ npm run build      # static site in dist/ (relative paths, host it from any fold
 npm run preview    # serve the built dist/ locally
 ```
 
-## Controls (so far)
+## Controls
 
 | Key | Action |
 |---|---|
@@ -21,13 +21,34 @@ npm run preview    # serve the built dist/ locally
 | W A S D / arrows | Walk |
 | Shift | Run |
 | Mouse | Look |
+| E | Use what's under the crosshair: lamps, wall switches, doors, the sliding terrace door, the TV |
+| V | First / third person |
+| C | Cinematic tour; press C or Esc to stop |
+| P | Save a high-resolution PNG (2× the window, up to 4096 px wide) |
 | 1 / 2 / 3 / 4 | Morning 08:30 · Afternoon 17:00 · Sunset 20:30 · Night 22:45 (2 s transition along Antwerp's real sun path) |
 | L | All lights on/off (lamps also switch on by themselves after dusk) |
-| Esc | Release the mouse |
+| Esc | Menu: time-of-day slider and presets, lights, quality, mouse sensitivity, field of view, view, tour, screenshot |
 | F | FPS counter |
 | H | Hide help |
 
-**Quality:** add `?q=low`, `?q=medium` (the default) or `?q=high` to the URL. The Esc menu with quality, sensitivity, field of view and a time slider comes in Step 6, along with interactions, the cinematic tour and mobile controls.
+**On a phone or tablet:**
+- Walk with the left-thumb joystick and drag anywhere else to look.
+- The buttons are E (use), Run, V (view) and ☰ (menu).
+
+**Things you can switch with E:**
+- **Lamps:** the table lamp on the sideboard, the desk lamp, the bedside lamp and the bamboo wall light.
+- **Wall switches:**
+  - by the front door: kitchen and bar downlights
+  - in the bedroom: bed lights
+  - in the corridor: ceiling light, spot and desk lamp
+  - next to the bathroom door: bathroom light
+  - outside by the sliding door: the string lights
+- **Doors:** the front, bedroom and bathroom doors swing, and the terrace door slides. The doors block your way when they're closed.
+- **TV:** shows a slow slideshow.
+
+**Cinematic tour (C):** a one-minute camera glide from the entrance through the kitchen and living room, out of the sliding door onto the terrace, ending with a slow push toward Theater Elckerlyc. The sky turns to sunset on the way, with letterbox bars and captions. Its path is `TOUR` in the config.
+
+**Quality:** Low / Medium / High in the Esc menu, or `?q=low|medium|high` in the URL. Changing quality reloads the page and puts you back where you were. Sensitivity, field of view and view mode are remembered in this browser.
 
 **Lighting:**
 - A real solar position for the Frankrijklei, with the default date set to 20 August.
@@ -73,6 +94,7 @@ npm run compare                        # all reference camera poses → compare/
 npm run compare -- --only 03,05        # a subset
 node tools/shot.mjs out.png "eye=3,7,1.6&look=3,9,1.2&fov=60"   # ad-hoc render from any plan position
 node tools/walktest.mjs                # headless checks: walking/collision, time-of-day keys, lights, quality presets
+node tools/uitest.mjs                  # headless checks: E interactions, V, C, P, Esc menu, touch controls
 ```
 
 `compare` renders the scene headlessly with Playwright from the pose stored for each photo (`COMPARE_CAMERAS` in the config). It then writes the photo and the render side by side.
@@ -92,6 +114,9 @@ src/util/                 geometry helpers (world-space UVs, rounded boxes) and 
 src/lighting/             sun position, sky dome, environment maps, window lights, lamps, time-of-day controller
 src/props/                furniture & props per room (kitchen, living, corridor, bedroom, bathroom, terrace), plants, shared kit
 src/render/post.js        post-processing chain (N8AO, bloom, ACES, vignette, SMAA)
-src/player/               first-person controller and height-aware collision
+src/player/               first-person controller, height-aware collision, third-person figure
+src/interact/             E interactions (hotspots, doors, switches) and the TV slideshow
+src/tour/                 cinematic tour
+src/ui/                   HUD styles, Esc menu, touch controls, screenshot
 tools/                    compare, ad-hoc shot and walk-test scripts (Playwright)
 ```

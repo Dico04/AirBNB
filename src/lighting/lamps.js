@@ -128,15 +128,27 @@ export class Lamps {
 
   toggleAll() {
     const anyOn = this.lamps.some((l) => l.on);
+    this.clearManual();
     this.mode = anyOn ? 'off' : 'on';
     return this.mode;
   }
 
-  toggle(id) {
-    const l = this.byId.get(id);
-    if (!l) return;
-    l.manual = !l.on;
+  // Manual switching (E on a lamp or wall switch). Leaves 'all on/off' mode, keeping what is lit.
+  toggle(ids) {
+    const list = (Array.isArray(ids) ? ids : [ids]).map((id) => this.byId.get(id)).filter(Boolean);
+    if (!list.length) return false;
+    if (this.mode !== 'auto') {
+      for (const l of this.lamps) l.manual = l.on;
+      this.mode = 'auto';
+    }
+    const turnOn = !list.some((l) => l.on);
+    for (const l of list) { l.manual = turnOn; l.on = turnOn; }
+    return turnOn;
   }
+
+  isOn(ids) { return (Array.isArray(ids) ? ids : [ids]).some((id) => this.byId.get(id)?.on); }
+
+  clearManual() { for (const l of this.lamps) delete l.manual; }
 
   get interiorLevel() {
     let s = 0, n = 0;

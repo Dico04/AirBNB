@@ -556,3 +556,19 @@ Sources consulted for the landmark:
   - 07 placed low and wide to match photo 07's view
   - Cameras can now ask for outdoor exposure (`outdoor: true`) when the photo was exposed for the view outside.
 - **Performance:** the city adds about 25 draw calls; façades, roofs and copings are each merged per material. A terrace view runs about 300 draw calls and roughly 0.55–0.6 M triangles; Step 7 handles further optimisation.
+
+### Step 6: interactions, tour, menu, mobile
+- **E interactions** (`src/interact/`):
+  - Every interactable is a world-space hotspot box. The crosshair ray picks the nearest one within 2.4 m (3.2 m for the TV), and walls block it.
+  - Door and sliding-door hotspots include the whole doorway, so an open door is as easy to aim at as a closed one.
+  - Doors animate, and their colliders follow the leaves.
+  - Three switch plates were added (corridor, beside the bathroom door, terrace by the sliding door). Switches toggle groups of lamps.
+  - A manual switch overrides the automatic dusk switching until the next time preset.
+- **TV:** a painted slideshow on a canvas (welcome card, Scheldt sunset, forest, sea), cross-faded with a slow zoom. It drives the screen's emissive map.
+- **V third person:** a stylised capsule figure in linen shirt and dark trousers, with a walk cycle. The over-the-shoulder camera boom pulls in when a wall is in the way, and E reaches from the figure's eyes.
+- **C tour:** keyframed eye and look Catmull-Rom splines with field-of-view easing, captions, letterbox bars and a time-of-day change to sunset. It opens the sliding door itself and hands control back at the end.
+- **P screenshot:** re-renders the frame at 2× (capped at 4096 px wide) and downloads it as `frankrijklei-<date>.png`.
+- **Esc menu:** time slider and presets, lights (auto / all on / all off), quality (reload with the same pose, time and view), mouse sensitivity, field of view, view mode, tour and screenshot. Viewer preferences are kept in `localStorage`.
+- **Mobile:** detected by a coarse pointer or touch support. It has a left-thumb joystick, drag-to-look, buttons for E, Run, V and the menu, and a short touch help line.
+- **Environment maps:** both are now captured with reusable cube cameras plus `PMREMGenerator.fromCubemap` into the same output targets, so there are no render-target allocations while the sky animates. Both cubes are 256 px because the generator keeps one ping-pong target.
+- **Tests:** `tools/uitest.mjs` covers lamp, switch, festoon and TV toggles, out-of-reach picking, door and sliding-door blocking, third person, the tour path and its sunset, the PNG export, the menu controls and touch controls. `tools/walktest.mjs` still passes, and `compare/step6-features.jpg` shows the new features.

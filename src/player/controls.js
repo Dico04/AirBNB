@@ -19,6 +19,9 @@ export class FirstPersonController {
     this.sensitivity = PLAYER.mouseSensitivity;
     this.keys = new Set();
     this.enabled = true;
+    this.forceRun = false;       // mobile run toggle
+    this.moving = false;
+    this.running = false;
     this.locked = false;
     this.bob = 0;
 
@@ -56,6 +59,7 @@ export class FirstPersonController {
   update(dt) {
     dt = Math.min(dt, 0.05);
     this.collision.updateDynamic();
+    this.moving = false;
     if (this.enabled) {
       const k = this.keys;
       let fx = 0, fz = 0;
@@ -65,9 +69,11 @@ export class FirstPersonController {
       if (k.has('KeyA') || k.has('ArrowLeft')) fx -= 1;
       if (this.externalMove) { fx += this.externalMove.x; fz += this.externalMove.y; }
       const len = Math.hypot(fx, fz);
+      this.moving = len > 0;
+      this.running = this.forceRun || k.has('ShiftLeft') || k.has('ShiftRight');
       if (len > 0) {
         fx /= Math.max(1, len); fz /= Math.max(1, len);
-        const run = k.has('ShiftLeft') || k.has('ShiftRight');
+        const run = this.running;
         const speed = run ? PLAYER.runSpeed : PLAYER.walkSpeed;
         const sin = Math.sin(this.yaw), cos = Math.cos(this.yaw);
         // forward = (-sin, -cos) in xz; right = (cos, -sin)

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Frankrijklei Rooftop – 3D walkthrough</title>
+    <script type="module" crossorigin src="./assets/index-C6eeCO-x.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DYF_oHT0.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="start" class="overlay">
+      <div class="card">
+        <h1>Rooftop apartment · Frankrijklei, Antwerp</h1>
+        <p class="keys-desktop">Click to walk around. Move with <b>W A S D</b>, look with the mouse, hold <b>Shift</b> to run, press <b>E</b> to switch lamps, open doors or the TV, <b>C</b> for a guided tour.</p>
+        <p class="keys-touch">Tap to start. Walk with the left thumb, drag to look around, <b>E</b> to use lamps, doors and the TV.</p>
+        <p class="sub" id="start-status">Preparing textures…</p>
+      </div>
+    </div>
+    <div id="help" class="panel">
+      <div class="keys-desktop"><b>WASD</b> walk · <b>Shift</b> run · <b>Mouse</b> look</div>
+      <div class="keys-desktop"><b>E</b> use · <b>V</b> view · <b>C</b> tour · <b>P</b> photo · <b>Esc</b> menu</div>
+      <div class="keys-desktop"><b>1–4</b> time of day · <b>L</b> lights · <b>F</b> FPS · <b>H</b> hide</div>
+      <div class="keys-touch">Left thumb: walk · drag: look · <b>E</b> use · <b>☰</b> menu</div>
+    </div>
+    <div id="fps" class="panel hidden"></div>
+    <div id="toast" class="panel"></div>
+    <div id="crosshair" class="hidden"></div>
+    <div id="prompt" class="panel hidden"></div>
+    <div id="letterbox"><div></div><div></div></div>
+    <div id="caption"></div>
+    <div id="menu" class="overlay hidden">
+      <div class="card menu">
+        <div class="menu-head"><h1>Paused</h1><button id="m-resume" class="primary">Resume</button></div>
+        <section>
+          <label>Time of day <span id="m-time-label"></span></label>
+          <input type="range" id="m-time" min="0" max="23.99" step="0.05" />
+          <div class="row"><button data-preset="0">Morning</button><button data-preset="1">Afternoon</button><button data-preset="2">Sunset</button><button data-preset="3">Night</button></div>
+        </section>
+        <section>
+          <label>Lights</label>
+          <div class="row seg" id="m-lights"><button data-v="auto">Auto</button><button data-v="on">All on</button><button data-v="off">All off</button></div>
+        </section>
+        <section>
+          <label>Quality</label>
+          <div class="row seg" id="m-quality"><button data-v="low">Low</button><button data-v="medium">Medium</button><button data-v="high">High</button></div>
+        </section>
+        <section class="two">
+          <div><label>Mouse sensitivity <span id="m-sens-label"></span></label><input type="range" id="m-sens" min="0.3" max="2.5" step="0.05" /></div>
+          <div><label>Field of view <span id="m-fov-label"></span></label><input type="range" id="m-fov" min="50" max="90" step="1" /></div>
+        </section>
+        <section>
+          <label>View</label>
+          <div class="row seg" id="m-view"><button data-v="first">First person</button><button data-v="third">Third person</button></div>
+        </section>
+        <div class="row"><button id="m-tour">▶ Cinematic tour</button><button id="m-shot">Screenshot</button></div>
+      </div>
+    </div>
+    <div id="touch" class="hidden">
+      <div id="joy"><div id="joy-knob"></div></div>
+      <div id="touch-buttons">
+        <button id="t-use">E</button><button id="t-run">Run</button><button id="t-view">V</button><button id="t-menu">☰</button>
+      </div>
+    </div>
+  </body>
+</html>
